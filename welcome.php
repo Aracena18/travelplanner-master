@@ -16,64 +16,64 @@ include 'db.php';
 
 
     <style>
-        /* Transparent Header Styling */
-        .transparent-header {
-            background-color: rgba(0, 0, 0, 0.3);
-            /* Transparent black */
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 999;
-        }
+    /* Transparent Header Styling */
+    .transparent-header {
+        background-color: rgba(0, 0, 0, 0.3);
+        /* Transparent black */
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 999;
+    }
 
-        .navbar-nav {
-            flex-direction: row;
-            gap: 1.5rem;
-        }
+    .navbar-nav {
+        flex-direction: row;
+        gap: 1.5rem;
+    }
 
-        .nav-link {
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
+    .nav-link {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
 
-        .nav-link:hover {
-            color: #FFD700;
-        }
+    .nav-link:hover {
+        color: #FFD700;
+    }
 
-        .background-image {
-            background: url("assets/images/background.jpg") no-repeat center center;
-            background-size: cover;
-            min-height: 100vh;
-        }
+    .background-image {
+        background: url("assets/images/background.jpg") no-repeat center center;
+        background-size: cover;
+        min-height: 100vh;
+    }
 
-        body {
-            padding-top: 80px;
-            /* Avoid overlap with the fixed header */
-        }
+    body {
+        padding-top: 80px;
+        /* Avoid overlap with the fixed header */
+    }
 
-        .custom-heading {
-            color: white;
-            font-size: 7rem;
-            font-weight: 100;
-            font-family: 'Roboto', sans-serif;
-        }
+    .custom-heading {
+        color: white;
+        font-size: 7rem;
+        font-weight: 100;
+        font-family: 'Roboto', sans-serif;
+    }
 
-        .custom-search {
-            border-radius: 200px;
-            font-size: 3rem;
-            background-color: transparent;
-            color: white;
-        }
+    .custom-search {
+        border-radius: 200px;
+        font-size: 3rem;
+        background-color: transparent;
+        color: white;
+    }
 
-        .custom-button {
-            border-radius: 200px;
-            font-size: 2rem;
-            background-color: orange;
-            color: white;
-            margin-top: 20px;
-        }
+    .custom-button {
+        border-radius: 200px;
+        font-size: 2rem;
+        background-color: orange;
+        color: white;
+        margin-top: 20px;
+    }
     </style>
 </head>;
 
@@ -104,8 +104,7 @@ include 'db.php';
             </div>
         </div>
     </nav>
-    <section class="d-flex flex-column justify-content-center align-items-center"
-        style="height: 100vh;">
+    <section class="d-flex flex-column justify-content-center align-items-center" style="height: 100vh;">
         <h1 class="custom-heading">Your Journey Starts Here</h1>
 
         <!-- Journey Button -->
@@ -156,9 +155,6 @@ include 'db.php';
         </div>
     </section>
     <section class="bg-light py-5" id="about">
-        <div class="container">
-            <h1>About</h1>
-        </div>
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

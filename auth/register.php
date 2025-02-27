@@ -18,16 +18,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Insert into database
         $sql = "INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$hashed_password')";
 
-        if ($conn->query($sql) === TRUE) {    
-            echo("register successfully"); 
-        header ('location: login.php' );
-         $success = "Registration successful! You can now <a href='login.php'>login</a>.";
-     
+        if ($conn->query($sql) === TRUE) {
+            echo ("register successfully");
+            header('location: login.php');
+            $success = "Registration successful! You can now <a href='login.php'>login</a>.";
         } else {
             $error = "Error: " . $sql . "<br>" . $conn->error;
         }
     }
-}s
+}
 
 $conn->close();
 ?>
@@ -40,6 +39,22 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-image: url('../assets/images/auth.png');
+        /* Replace with your image path */
+        background-size: cover;
+        /* Ensures the image covers the whole page */
+        background-position: center;
+        /* Centers the image */
+        background-repeat: no-repeat;
+        /* Prevents repeating the image */
+        height: 100vh;
+        /* Full viewport height */
+    }
+    </style>
 </head>
 
 <body>
@@ -68,7 +83,7 @@ $conn->close();
                         <input type="password" class="form-control" id="confirm_password" name="confirm_password"
                             placeholder="Confirm your password" required>
                     </div>
-                    <button type="submit" id = "reg" class="btn btn-primary w-100">Register</button>
+                    <button type="submit" id="reg" class="btn btn-primary w-100">Register</button>
                 </form>
                 <div class="text-center mt-3">
                     <p>Already have an account? <a href="login.php" class="text-decoration-none">Login here</a></p>
@@ -78,11 +93,7 @@ $conn->close();
     </div>
 
     <script class="s">
-        const btn = document.getElementById ('reg');
-
-      
-
-
+    const btn = document.getElementById('reg');
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

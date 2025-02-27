@@ -3,7 +3,6 @@ session_start();
 ob_start();
 
 require 'db.php';
-require 'destinations.php';
 require 'header.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -39,19 +38,33 @@ try {
     die("Error fetching trips: " . $e->getMessage());
 }
 
+// Fetch destinations and hotels from the database
+$destinations = [];
+$stmt = $pdo->query("SELECT DISTINCT h.location_id, l.name as location_name FROM hotels h JOIN locations l ON h.location_id = l.id");
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $location_id = $row['location_id'];
+    $location_name = $row['location_name'];
+    $destinations[$location_id] = ['name' => $location_name, 'hotels' => []];
+
+    $hotel_stmt = $pdo->prepare("SELECT * FROM hotels WHERE location_id = ?");
+    $hotel_stmt->execute([$location_id]);
+    while ($hotel_row = $hotel_stmt->fetch(PDO::FETCH_ASSOC)) {
+        $destinations[$location_id]['hotels'][] = $hotel_row;
+    }
+}
+
 function getHotelImage($destination, $hotelName)
 {
     global $destinations;
     if (isset($destinations[$destination])) {
-        foreach ($destinations[$destination] as $hotel) {
+        foreach ($destinations[$destination]['hotels'] as $hotel) {
             if ($hotel['name'] === $hotelName) {
-                return "assets/images/" . $hotel['image'];
+                return "assets/images/" . $hotel['image_name'];
             }
         }
     }
     return "assets/images/hotel.png";
 }
-
 
 ob_end_flush();
 ?>

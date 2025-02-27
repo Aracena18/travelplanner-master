@@ -20,8 +20,8 @@ if (!isset($_SESSION['is_admin'])) {
 }
 
 // Validate required fields
-$required_fields = ['name', 'location', 'price', 'rooms', 'status'];
-$missing_fields = array_filter($required_fields, function($field) {
+$required_fields = ['name', 'image_name', 'stars', 'location_id', 'latitude', 'longitude', 'price', 'rooms', 'status'];
+$missing_fields = array_filter($required_fields, function ($field) {
     return !isset($_POST[$field]) || empty($_POST[$field]);
 });
 
@@ -36,32 +36,36 @@ if (!empty($missing_fields)) {
 try {
     // Sanitize inputs
     $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $location = mysqli_real_escape_string($conn, $_POST['location']);
+    $image_name = mysqli_real_escape_string($conn, $_POST['image_name']);
+    $stars = intval($_POST['stars']);
+    $location_id = intval($_POST['location_id']);
+    $latitude = floatval($_POST['latitude']);
+    $longitude = floatval($_POST['longitude']);
     $price = floatval($_POST['price']);
     $rooms = intval($_POST['rooms']);
     $status = mysqli_real_escape_string($conn, $_POST['status']);
 
     // Use prepared statement
-    $stmt = $conn->prepare("INSERT INTO hotels (name, location, price_per_night, available_rooms, status) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssdis", $name, $location, $price, $rooms, $status);
+    $stmt = $conn->prepare("INSERT INTO hotels (name, image_name, location_id, stars, latitude, longitude, price_per_night, available_rooms, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssiddissi", $name, $image_name, $location_id, $stars, $latitude, $longitude, $price, $rooms, $status);
 
     if ($stmt->execute()) {
-        echo json_encode([
+        $response = [
             'success' => true,
             'message' => 'Hotel added successfully',
             'hotelId' => $conn->insert_id
-        ]);
+        ];
     } else {
         throw new Exception($stmt->error);
     }
-
 } catch (Exception $e) {
-    echo json_encode([
+    $response = [
         'success' => false,
         'message' => 'Database error: ' . $e->getMessage()
-    ]);
+    ];
 }
 
 $stmt->close();
 $conn->close();
-?>
+
+echo json_encode($response);

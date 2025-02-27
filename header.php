@@ -51,8 +51,8 @@ if (!isset($_SESSION)) {
         .search-bar {
             border-radius: 50px;
             padding: 0.5rem 1rem;
-            border: none;
             width: 250px;
+            margin-top: 20px;
         }
 
         .dropdown-menu {

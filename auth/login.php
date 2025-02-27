@@ -50,6 +50,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-image: url('../assets/images/auth.png');
+        /* Replace with your image path */
+        background-size: cover;
+        /* Ensures the image covers the whole page */
+        background-position: center;
+        /* Centers the image */
+        background-repeat: no-repeat;
+        /* Prevents repeating the image */
+        height: 100vh;
+        /* Full viewport height */
+    }
+    </style>
 </head>
 
 <body>
