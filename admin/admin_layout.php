@@ -19,6 +19,9 @@
         padding: 1.5rem;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
         border-right: 1px solid #eaeaea;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .sidenav-header {
@@ -91,6 +94,10 @@
     .sidebar a:hover {
         background-color: #575757;
     }
+
+    .logout {
+        margin-top: auto;
+    }
     </style>
 </head>
 
@@ -101,56 +108,66 @@
 
     <!-- Sidebar -->
     <aside>
-        <div class="sidenav-header">
-            <h4>Admin Panel</h4>
+        <div>
+            <div class="sidenav-header">
+                <h4>Admin Panel</h4>
+            </div>
+            <nav class="sidenav">
+                <ul>
+                    <li>
+                        <a href="dashboard.php" class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>">
+                            <i class="fas fa-th-large"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="hotels.php" class="<?= $current_page == 'hotels.php' ? 'active' : '' ?>">
+                            <i class="fas fa-hotel"></i>
+                            Hotels
+                        </a>
+                    </li>
+                    <li>
+                        <a href="flights.php" class="<?= $current_page == 'flights.php' ? 'active' : '' ?>">
+                            <i class="fas fa-plane-departure"></i>
+                            Flights
+                        </a>
+                    </li>
+                    <li>
+                        <a href="users.php" class="<?= $current_page == 'users.php' ? 'active' : '' ?>">
+                            <i class="fas fa-users"></i>
+                            Users
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a href="recommendations.php" class="<?= $current_page == 'recommendations.php' ? 'active' : '' ?>">
+                            <i class="fas fa-star"></i>
+                            Recommendations
+                        </a>
+                    </li>
+                    <li>
+                        <a href="explores.php" class="<?= $current_page == 'explores.php' ? 'active' : '' ?>">
+                            <i class="fas fa-compass"></i>
+                            Explores
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.php" class="<?= $current_page == 'settings.php' ? 'active' : '' ?>">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </a>
+                    </li> -->
+                </ul>
+            </nav>
         </div>
-        <nav class="sidenav">
-            <ul>
-                <li>
-                    <a href="dashboard.php" class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>">
-                        <i class="fas fa-th-large"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="hotels.php" class="<?= $current_page == 'hotels.php' ? 'active' : '' ?>">
-                        <i class="fas fa-hotel"></i>
-                        Hotels
-                    </a>
-                </li>
-                <li>
-                    <a href="flights.php" class="<?= $current_page == 'flights.php' ? 'active' : '' ?>">
-                        <i class="fas fa-plane-departure"></i>
-                        Flights
-                    </a>
-                </li>
-                <li>
-                    <a href="users.php" class="<?= $current_page == 'users.php' ? 'active' : '' ?>">
-                        <i class="fas fa-users"></i>
-                        Users
-                    </a>
-                </li>
-                <li>
-                    <a href="recommendations.php" class="<?= $current_page == 'recommendations.php' ? 'active' : '' ?>">
-                        <i class="fas fa-star"></i>
-                        Recommendations
-                    </a>
-                </li>
-                <li>
-                    <a href="explores.php" class="<?= $current_page == 'explores.php' ? 'active' : '' ?>">
-                        <i class="fas fa-compass"></i>
-                        Explores
-                    </a>
-                </li>
-                <li>
-                    <a href="settings.php" class="<?= $current_page == 'settings.php' ? 'active' : '' ?>">
-                        <i class="fas fa-cog"></i>
-                        Settings
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        <div class="logout">
+            <a href="../auth/logout.php" class="btn btn-danger btn-block">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
     </aside>
 
     <!-- Main content -->
     <div class="main-content"></div>
+</body>
+
+</html>

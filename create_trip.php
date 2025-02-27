@@ -37,6 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $pdo->prepare("INSERT INTO trips (user_id, trip_name, destination, hotel, flight_cost, adults_num, childs_num, start_date, end_date, estimated_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$user_id, $trip_name, $destination, $hotel, $flight_cost, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost]);
 
+    // Get the inserted trip ID
+    $trip_id = $pdo->lastInsertId();
+
+    // Insert one flight into the flights table
+    $stmt = $pdo->prepare("INSERT INTO flights (trip_id, flight, location_id, cost, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$trip_id, 'Outbound', $destination, $flight_cost, $start_date, $end_date]);
+
     header('Location: index.php');
     exit;
 }
