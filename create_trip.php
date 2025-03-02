@@ -7,6 +7,16 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Generate a unique trip ID if not already present in the URL
+// Generate a unique trip ID if not already present in the URL
+if (!isset($_GET['id'])) {
+    $id = random_int(100000, 999999);
+    header("Location: create_trip.php?id=$id");
+    exit;
+} else {
+    $id = $_GET['id'];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id'];
     $trip_name = $_POST['trip_name'];
@@ -32,13 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ($childs_num * ($selected_hotel_price * 0.80) * $number_of_nights);
 
     // Insert trip with estimated cost
-    $stmt = $pdo->prepare("INSERT INTO trips (user_id, trip_name, destination, hotel, adults_num, childs_num, start_date, end_date, estimated_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$user_id, $trip_name, $destination, $hotel, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost]);
+    $stmt = $pdo->prepare("INSERT INTO trips (id, user_id, trip_name, destination, hotel, adults_num, childs_num, start_date, end_date, estimated_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$id, $user_id, $trip_name, $destination, $hotel, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost]);
 
-    // Get the last inserted trip ID
-    $trip_id = $pdo->lastInsertId();
-
-    header("Location: create_trip.php?trip_id=$trip_id");
+    header("Location: create_trip.php?id=$id");
     exit;
 }
 
@@ -56,9 +63,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $destinations[$location_id]['hotels'][] = $hotel_row;
     }
 }
-
-// Get the trip ID from the query parameter
-$trip_id = isset($_GET['trip_id']) ? intval($_GET['trip_id']) : null;
 ?>
 
 <!DOCTYPE html>
@@ -158,8 +162,8 @@ $trip_id = isset($_GET['trip_id']) ? intval($_GET['trip_id']) : null;
                         onclick="redirectTo('plans/car_rental.php')">
                         <i class="plan-type-icon fas fa-car"></i> Car Rental
                     </button>
-                    <button type="button" class="btn btn-outline-primary m-2" onclick="redirectTo('plans/parking.php')">
-                        <i class="plan-type-icon fas fa-parking"></i> Parking
+                    <button type="button" class="btn btn-outline-primary m-2" onclick="redirectTo('plans/concert.php')">
+                        <i class="plan-type-icon fas fa-music"></i> Concert
                     </button>
                     <button type="button" class="btn btn-outline-primary m-2" onclick="redirectTo('plans/meeting.php')">
                         <i class="plan-type-icon fas fa-handshake"></i> Meeting
@@ -288,8 +292,8 @@ $trip_id = isset($_GET['trip_id']) ? intval($_GET['trip_id']) : null;
         loadHotelsForDestination(destinationSelect.value);
 
         function redirectTo(page) {
-            const tripId = <?= json_encode($trip_id); ?>;
-            window.location.href = `${page}?trip_id=${tripId}`;
+            const tripId = <?= json_encode($id); ?>;
+            window.location.href = `${page}?id=${tripId}`;
         }
     </script>
 </body>
