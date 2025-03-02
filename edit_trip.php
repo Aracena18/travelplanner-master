@@ -85,7 +85,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     <select id="destination" name="destination" class="form-select form-select-sm" required>
                         <?php foreach ($destinations as $location_id => $location): ?>
                             <option value="<?= $location_id ?>"
-                                <?= $trip['destination'] === $location_id ? 'selected' : '' ?>>
+                                <?= $trip['destination'] == $location_id ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($location['name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -224,8 +224,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 (hotelCost * roomsNeeded * numberOfNights);
 
             document.getElementById('estimated-cost-display').textContent = `Estimated Cost: $${estimatedCost.toFixed(2)}`;
+            estimatedCostInput.value = estimatedCost.toFixed(2);
         }
-
 
         destinationSelect.addEventListener('change', function() {
             loadHotelsForDestination(this.value);
