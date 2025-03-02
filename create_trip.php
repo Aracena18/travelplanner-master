@@ -119,7 +119,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 <input type="hidden" id="hotel" name="hotel">
 
                 <div class="col-md-6">
-                    <label for="flight_cost" class="form-label">Flight Cost (In dollars)</label>
+                    <label for="flight_cost" class="form-label">Total 2 way Flight Cost (In dollars)</label>
                     <input type="text" id="flight_cost" name="flight_cost" class="form-control form-control-sm"
                         required>
                 </div>

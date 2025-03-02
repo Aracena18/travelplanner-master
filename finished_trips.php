@@ -1,6 +1,5 @@
 <?php
 require 'db.php';
-require 'destinations.php';
 require 'header.php';
 
 if (!isset($_SESSION['user_id'])) {

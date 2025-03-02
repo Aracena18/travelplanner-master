@@ -112,7 +112,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 <input type="hidden" id="estimated_cost" name="estimated_cost" value="">
 
                 <div class="col-md-6">
-                    <label for="flight_cost" class="form-label">Flight Cost (In dollars)</label>
+                    <label for="flight_cost" class="form-label">Total 2 way Flight Cost (In dollars)</label>
                     <input type="number" id="flight_cost" name="flight_cost" min="0" step="0.01"
                         value="<?= htmlspecialchars($trip['flight_cost']) ?>" class="form-control form-control-sm"
                         required>

@@ -17,18 +17,20 @@ try {
     // Determine if a search query is present
     if (!empty($searchQuery)) {
         $stmt = $pdo->prepare(
-            "SELECT * FROM trips 
-            WHERE user_id = ? 
-            AND (trip_name LIKE ? OR destination LIKE ? OR hotel LIKE ?) 
-            ORDER BY start_date ASC"
+            "SELECT t.*, l.name as location_name FROM trips t
+            JOIN locations l ON t.destination = l.id
+            WHERE t.user_id = ? 
+            AND (t.trip_name LIKE ? OR l.name LIKE ? OR t.hotel LIKE ?) 
+            ORDER BY t.start_date ASC"
         );
         $searchTerm = '%' . $searchQuery . '%';
         $stmt->execute([$user_id, $searchTerm, $searchTerm, $searchTerm]);
     } else {
         $stmt = $pdo->prepare(
-            "SELECT * FROM trips 
-            WHERE user_id = ? AND end_date >= ? 
-            ORDER BY start_date ASC"
+            "SELECT t.*, l.name as location_name FROM trips t
+            JOIN locations l ON t.destination = l.id
+            WHERE t.user_id = ? AND t.end_date >= ? 
+            ORDER BY t.start_date ASC"
         );
         $stmt->execute([$user_id, date('Y-m-d')]);
     }
@@ -93,7 +95,7 @@ ob_end_flush();
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($trip['trip_name']) ?></h5>
                             <p class="card-text">
-                                <strong>Destination:</strong> <?= htmlspecialchars($trip['destination']) ?><br>
+                                <strong>Destination:</strong> <?= htmlspecialchars($trip['location_name']) ?><br>
                                 <strong>Hotel:</strong> <?= htmlspecialchars($trip['hotel']) ?><br>
                                 <strong>Flight Cost:</strong> <?= htmlspecialchars('$' . $trip['flight_cost']) ?><br>
                                 <strong>Adults:</strong> <?= htmlspecialchars($trip['adults_num']) ?><br>

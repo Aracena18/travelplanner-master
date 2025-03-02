@@ -69,15 +69,14 @@ include 'admin_layout.php';
     <title>Admin Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-    .main-content {
-        margin-left: 280px;
-        /* Adjusted to match the sidebar width */
-        padding: 20px;
-    }
+        .main-content {
+            margin-left: 280px;
+            /* Adjusted to match the sidebar width */
+            padding: 20px;
+        }
     </style>
 </head>
 
@@ -104,16 +103,16 @@ include 'admin_layout.php';
                 </thead>
                 <tbody>
                     <?php foreach ($flights as $flight): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($flight['id']) ?></td>
-                        <td><?= htmlspecialchars($flight['location_name']) ?></td>
-                        <td><?= htmlspecialchars($flight['cost']) ?></td>
-                        <td>
-                            <a href="edit_flight.php?id=<?= $flight['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="flights.php?delete=<?= $flight['id'] ?>" class="btn btn-danger btn-sm"
-                                onclick="return confirm('Are you sure you want to delete this flight?');">Delete</a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><?= htmlspecialchars($flight['id']) ?></td>
+                            <td><?= htmlspecialchars($flight['location_name']) ?></td>
+                            <td><?= htmlspecialchars($flight['cost']) ?></td>
+                            <td>
+                                <a href="edit_flight.php?id=<?= $flight['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="flights.php?delete=<?= $flight['id'] ?>" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to delete this flight?');">Delete</a>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
