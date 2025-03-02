@@ -12,7 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $trip_name = $_POST['trip_name'];
     $destination = $_POST['destination'];
     $hotel = $_POST['hotel'];
-    $flight_cost = floatval($_POST['flight_cost']);
     $adults_num = intval($_POST['adults_num']);
     $childs_num = intval($_POST['childs_num']);
     $start_date = $_POST['start_date'];
@@ -29,22 +28,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selected_hotel_price = $stmt->fetchColumn();
 
     // Calculate estimated cost
-    $estimated_cost = ($flight_cost * 2) +
-        ($selected_hotel_price * $number_of_nights) +
+    $estimated_cost = ($selected_hotel_price * $number_of_nights) +
         ($childs_num * ($selected_hotel_price * 0.80) * $number_of_nights);
 
     // Insert trip with estimated cost
-    $stmt = $pdo->prepare("INSERT INTO trips (user_id, trip_name, destination, hotel, flight_cost, adults_num, childs_num, start_date, end_date, estimated_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$user_id, $trip_name, $destination, $hotel, $flight_cost, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost]);
+    $stmt = $pdo->prepare("INSERT INTO trips (user_id, trip_name, destination, hotel, adults_num, childs_num, start_date, end_date, estimated_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$user_id, $trip_name, $destination, $hotel, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost]);
 
-    // Get the inserted trip ID
+    // Get the last inserted trip ID
     $trip_id = $pdo->lastInsertId();
 
-    // Insert one flight into the flights table
-    $stmt = $pdo->prepare("INSERT INTO flights (trip_id, flight, location_id, cost, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$trip_id, 'Outbound', $destination, $flight_cost, $start_date, $end_date]);
-
-    header('Location: index.php');
+    header("Location: create_trip.php?trip_id=$trip_id");
     exit;
 }
 
@@ -62,6 +56,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $destinations[$location_id]['hotels'][] = $hotel_row;
     }
 }
+
+// Get the trip ID from the query parameter
+$trip_id = isset($_GET['trip_id']) ? intval($_GET['trip_id']) : null;
 ?>
 
 <!DOCTYPE html>
@@ -73,11 +70,17 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     <title>Create Trip</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         .carousel-item img {
             max-height: 500px;
             width: auto;
             object-fit: cover;
+        }
+
+        .plan-type-icon {
+            font-size: 24px;
+            margin-right: 8px;
         }
     </style>
 </head>
@@ -119,15 +122,10 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 <input type="hidden" id="hotel" name="hotel">
 
                 <div class="col-md-6">
-                    <label for="flight_cost" class="form-label">Total 2 way Flight Cost (In dollars)</label>
-                    <input type="text" id="flight_cost" name="flight_cost" class="form-control form-control-sm"
-                        required>
-                </div>
-                <div class="col-md-3">
                     <label for="adults_num" class="form-label">No. of Adults</label>
                     <input type="text" id="adults_num" name="adults_num" class="form-control form-control-sm" required>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-6">
                     <label for="childs_num" class="form-label">No. of Children</label>
                     <input type="text" id="childs_num" name="childs_num" class="form-control form-control-sm" required>
                 </div>
@@ -138,6 +136,38 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 <div class="col-md-6">
                     <label for="end_date" class="form-label">End Date</label>
                     <input type="date" id="end_date" name="end_date" class="form-control form-control-sm" required>
+                </div>
+            </div>
+
+            <!-- Plan Types Section -->
+            <div class="text-center mt-4">
+                <h2 class="mb-4">Add Plans</h2>
+                <div class="d-flex flex-wrap justify-content-center mb-4">
+                    <button type="button" class="btn btn-outline-primary m-2"
+                        onclick="redirectTo('plans/activity.php')">
+                        <i class="plan-type-icon fas fa-running"></i> Activity
+                    </button>
+                    <button type="button" class="btn btn-outline-primary m-2" onclick="redirectTo('plans/flight.php')">
+                        <i class="plan-type-icon fas fa-plane"></i> Flight
+                    </button>
+                    <button type="button" class="btn btn-outline-primary m-2"
+                        onclick="redirectTo('plans/restaurant.php')">
+                        <i class="plan-type-icon fas fa-utensils"></i> Restaurant
+                    </button>
+                    <button type="button" class="btn btn-outline-primary m-2"
+                        onclick="redirectTo('plans/car_rental.php')">
+                        <i class="plan-type-icon fas fa-car"></i> Car Rental
+                    </button>
+                    <button type="button" class="btn btn-outline-primary m-2" onclick="redirectTo('plans/parking.php')">
+                        <i class="plan-type-icon fas fa-parking"></i> Parking
+                    </button>
+                    <button type="button" class="btn btn-outline-primary m-2" onclick="redirectTo('plans/meeting.php')">
+                        <i class="plan-type-icon fas fa-handshake"></i> Meeting
+                    </button>
+                    <button type="button" class="btn btn-outline-primary m-2"
+                        onclick="redirectTo('plans/transportation.php')">
+                        <i class="plan-type-icon fas fa-bus"></i> Transportation
+                    </button>
                 </div>
             </div>
 
@@ -152,9 +182,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         </form>
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
         const destinationSelect = document.getElementById('destination');
         const hotelCardsContainer = document.getElementById('hotel-cards');
@@ -223,7 +253,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         }
 
         function calculateEstimatedCost() {
-            const flightCost = parseFloat(document.getElementById('flight_cost').value) || 0;
             const adultsNum = parseInt(document.getElementById('adults_num').value) || 0;
             const childsNum = parseInt(document.getElementById('childs_num').value) || 0;
             const startDate = new Date(document.getElementById('start_date').value);
@@ -240,14 +269,13 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             const roomsNeeded = Math.ceil(totalPeople / 2);
 
             // Calculate the estimated cost
-            const estimatedCost = (flightCost * adultsNum) +
-                (hotelCost * roomsNeeded * numberOfNights);
+            const estimatedCost = (hotelCost * roomsNeeded * numberOfNights);
 
             document.getElementById('estimated-cost-display').textContent = `Estimated Cost: $${estimatedCost.toFixed(2)}`;
         }
 
         // Attach event listeners to update the cost dynamically
-        ['flight_cost', 'adults_num', 'childs_num', 'start_date', 'end_date'].forEach(id => {
+        ['adults_num', 'childs_num', 'start_date', 'end_date'].forEach(id => {
             document.getElementById(id).addEventListener('input', calculateEstimatedCost);
         });
 
@@ -258,6 +286,11 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
         // Load the initial hotels for the current destination
         loadHotelsForDestination(destinationSelect.value);
+
+        function redirectTo(page) {
+            const tripId = <?= json_encode($trip_id); ?>;
+            window.location.href = `${page}?trip_id=${tripId}`;
+        }
     </script>
 </body>
 
