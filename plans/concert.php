@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
 
     // Insert concert details into the database
-    $stmt = $pdo->prepare("INSERT INTO concert (user_id, event_name, start_date, end_date, start_time, end_time, venue, address, phone, website, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO concert (user_id, event_name, start_date, end_date, start_time, end_time, venue, address, phone, website, email, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
     $stmt->execute([$user_id, $event_name, $start_date, $end_date, $start_time, $end_time, $venue, $address, $phone, $website, $email]);
 
     header('Location: index.php');

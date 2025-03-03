@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone'];
 
     // Insert car rental details into the database
-    $stmt = $pdo->prepare("INSERT INTO car_rental (user_id, trip_id, cost, rental_agency, website, email, phone) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO car_rental (user_id, trip_id, cost, rental_agency, website, email, phone, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
     $stmt->execute([$user_id, $trip_id, $cost, $rental_agency, $website, $email, $phone]);
 
     header('Location: index.php');

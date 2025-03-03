@@ -97,7 +97,6 @@ ob_end_flush();
                             <p class="card-text">
                                 <strong>Destination:</strong> <?= htmlspecialchars($trip['location_name']) ?><br>
                                 <strong>Hotel:</strong> <?= htmlspecialchars($trip['hotel']) ?><br>
-                                <strong>Flight Cost:</strong> <?= htmlspecialchars('$' . $trip['flight_cost']) ?><br>
                                 <strong>Adults:</strong> <?= htmlspecialchars($trip['adults_num']) ?><br>
                                 <strong>Children:</strong> <?= htmlspecialchars($trip['childs_num']) ?><br>
                                 <strong>Start Date:</strong> <?= htmlspecialchars($trip['start_date']) ?><br>

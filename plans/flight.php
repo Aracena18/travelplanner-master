@@ -3,22 +3,28 @@
 include '../db.php';
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../auth/login.php');
+// Get the trip_id from the URL
+if (!isset($_GET['trip_id'])) {
+    header('Location: ../create_trip.php');
     exit;
+} else {
+    $trip_id = $_GET['trip_id'];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_SESSION['user_id'];
     $departure_date = $_POST['departure_date'];
+    $departure_time = $_POST['departure_time'];
     $airline = $_POST['airline'];
     $flight_cost = $_POST['flight_cost'];
 
-    // Insert flight details into the database
-    $stmt = $pdo->prepare("INSERT INTO flights (user_id, departure_date, airline, flight_cost) VALUES (?, ?, ?, ?)");
-    $stmt->execute([$user_id, $departure_date, $airline, $flight_cost]);
+    // Combine date and time for departure
+    $departure = $departure_date . ' ' . $departure_time;
 
-    header('Location: index.php');
+    // Insert flight details into the database
+    $stmt = $pdo->prepare("INSERT INTO flights (trip_id, departure, airline, cost, created_at) VALUES (?, ?, ?, ?, NOW())");
+    $stmt->execute([$trip_id, $departure, $airline, $flight_cost]);
+
+    header("Location: ../create_trip.php?trip_id=$trip_id");
     exit;
 }
 ?>
@@ -42,6 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="date" id="departure_date" name="departure_date" class="form-control" required>
             </div>
             <div class="mb-3">
+                <label for="departure_time" class="form-label">Departure Time</label>
+                <input type="time" id="departure_time" name="departure_time" class="form-control" required>
+            </div>
+            <div class="mb-3">
                 <label for="airline" class="form-label">Airline</label>
                 <input type="text" id="airline" name="airline" class="form-control" required>
             </div>
@@ -51,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Add Flight</button>
-                <a href="index.php" class="btn btn-secondary">Cancel</a>
+                <a href="../create_trip.php?trip_id=<?= $trip_id ?>" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

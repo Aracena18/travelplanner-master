@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $number_of_passengers = $_POST['number_of_passengers'];
 
     // Insert transportation details into the database
-    $stmt = $pdo->prepare("INSERT INTO transportation (user_id, event_name, departure_date, departure_time, arrival_date, arrival_time, address, location_name, phone, website, email, vehicle_info, vehicle_description, number_of_passengers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO transportation (user_id, event_name, departure_date, departure_time, arrival_date, arrival_time, address, location_name, phone, website, email, vehicle_info, vehicle_description, number_of_passengers, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
     $stmt->execute([$user_id, $event_name, $departure_date, $departure_time, $arrival_date, $arrival_time, $address, $location_name, $phone, $website, $email, $vehicle_info, $vehicle_description, $number_of_passengers]);
 
     header('Location: index.php');

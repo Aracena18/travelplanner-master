@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price = $_POST['price'];
 
     // Insert restaurant details into the database
-    $stmt = $pdo->prepare("INSERT INTO restaurant (address, phone, website, email, cuisine, party_size, dress_code, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO restaurant (address, phone, website, email, cuisine, party_size, dress_code, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
     $stmt->execute([$address, $phone, $website, $email, $cuisine, $party_size, $dress_code, $price]);
 
     header('Location: index.php');

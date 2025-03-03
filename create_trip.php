@@ -8,13 +8,12 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Generate a unique trip ID if not already present in the URL
-// Generate a unique trip ID if not already present in the URL
-if (!isset($_GET['id'])) {
-    $id = random_int(100000, 999999);
-    header("Location: create_trip.php?id=$id");
+if (!isset($_GET['trip_id'])) {
+    $trip_id = random_int(100000, 999999);
+    header("Location: create_trip.php?trip_id=$trip_id");
     exit;
 } else {
-    $id = $_GET['id'];
+    $trip_id = $_GET['trip_id'];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -42,10 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ($childs_num * ($selected_hotel_price * 0.80) * $number_of_nights);
 
     // Insert trip with estimated cost
-    $stmt = $pdo->prepare("INSERT INTO trips (id, user_id, trip_name, destination, hotel, adults_num, childs_num, start_date, end_date, estimated_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$id, $user_id, $trip_name, $destination, $hotel, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost]);
+    $stmt = $pdo->prepare("INSERT INTO trips (trip_id, user_id, trip_name, destination, hotel, adults_num, childs_num, start_date, end_date, estimated_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$trip_id, $user_id, $trip_name, $destination, $hotel, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost]);
 
-    header("Location: create_trip.php?id=$id");
+    header("Location: create_trip.php?trip_id=$trip_id");
     exit;
 }
 
@@ -62,6 +61,14 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     while ($hotel_row = $hotel_stmt->fetch(PDO::FETCH_ASSOC)) {
         $destinations[$location_id]['hotels'][] = $hotel_row;
     }
+}
+
+// Fetch activities for the current trip
+$activities = [];
+$stmt = $pdo->prepare("SELECT * FROM activity WHERE trip_id = ?");
+$stmt->execute([$trip_id]);
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $activities[] = $row;
 }
 ?>
 
@@ -143,37 +150,10 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 </div>
             </div>
 
-            <!-- Plan Types Section -->
-            <div class="text-center mt-4">
-                <h2 class="mb-4">Add Plans</h2>
-                <div class="d-flex flex-wrap justify-content-center mb-4">
-                    <button type="button" class="btn btn-outline-primary m-2"
-                        onclick="redirectTo('plans/activity.php')">
-                        <i class="plan-type-icon fas fa-running"></i> Activity
-                    </button>
-                    <button type="button" class="btn btn-outline-primary m-2" onclick="redirectTo('plans/flight.php')">
-                        <i class="plan-type-icon fas fa-plane"></i> Flight
-                    </button>
-                    <button type="button" class="btn btn-outline-primary m-2"
-                        onclick="redirectTo('plans/restaurant.php')">
-                        <i class="plan-type-icon fas fa-utensils"></i> Restaurant
-                    </button>
-                    <button type="button" class="btn btn-outline-primary m-2"
-                        onclick="redirectTo('plans/car_rental.php')">
-                        <i class="plan-type-icon fas fa-car"></i> Car Rental
-                    </button>
-                    <button type="button" class="btn btn-outline-primary m-2" onclick="redirectTo('plans/concert.php')">
-                        <i class="plan-type-icon fas fa-music"></i> Concert
-                    </button>
-                    <button type="button" class="btn btn-outline-primary m-2" onclick="redirectTo('plans/meeting.php')">
-                        <i class="plan-type-icon fas fa-handshake"></i> Meeting
-                    </button>
-                    <button type="button" class="btn btn-outline-primary m-2"
-                        onclick="redirectTo('plans/transportation.php')">
-                        <i class="plan-type-icon fas fa-bus"></i> Transportation
-                    </button>
-                </div>
-            </div>
+            <?php
+            include 'api/sub_plans_options.php';
+            include 'api/sub_plans.php';
+            ?>
 
             <!-- Estimated Cost Display -->
             <div class="alert alert-info fs-5 fw-bold text-center mt-3" id="estimated-cost-display">Estimated Cost:
@@ -193,6 +173,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         const destinationSelect = document.getElementById('destination');
         const hotelCardsContainer = document.getElementById('hotel-cards');
         const hotels = <?= json_encode($destinations); ?>;
+        const activities = <?= json_encode($activities); ?>;
 
         function loadHotelsForDestination(destination) {
             hotelCardsContainer.innerHTML = '';
@@ -273,7 +254,12 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             const roomsNeeded = Math.ceil(totalPeople / 2);
 
             // Calculate the estimated cost
-            const estimatedCost = (hotelCost * roomsNeeded * numberOfNights);
+            let estimatedCost = (hotelCost * roomsNeeded * numberOfNights);
+
+            // Add the cost of activities
+            activities.forEach(activity => {
+                estimatedCost += parseFloat(activity.cost);
+            });
 
             document.getElementById('estimated-cost-display').textContent = `Estimated Cost: $${estimatedCost.toFixed(2)}`;
         }
@@ -292,8 +278,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         loadHotelsForDestination(destinationSelect.value);
 
         function redirectTo(page) {
-            const tripId = <?= json_encode($id); ?>;
-            window.location.href = `${page}?id=${tripId}`;
+            const tripId = <?= json_encode($trip_id); ?>;
+            window.location.href = `${page}?trip_id=${tripId}`;
         }
     </script>
 </body>
