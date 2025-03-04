@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 // Get the trip_id from the URL
 if (!isset($_GET['trip_id'])) {
-    header('Location: ../create_trip.php');
+    header('Location: ../edit_trip.php');
     exit;
 } else {
     $trip_id = $_GET['trip_id'];
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $pdo->prepare("INSERT INTO car_rental (trip_id, start_date, start_time, end_date, end_time, car_type, pickup_location, dropoff_location, cost, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
     $stmt->execute([$trip_id, $start_date, $start_time, $end_date, $end_time, $car_type, $pickup_location, $dropoff_location, $cost]);
 
-    header("Location: ../create_trip.php?trip_id=$trip_id");
+    header("Location: ../edit_trip.php?trip_id=$trip_id");
     exit;
 }
 ?>

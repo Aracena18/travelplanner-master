@@ -82,175 +82,191 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
     <?php if (!empty($activities)): ?>
         <h3>Activities</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Venue</th>
-                    <th>Address</th>
-                    <th>Website</th>
-                    <th>Email</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($activities as $activity): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($activity['start_date']) ?></td>
-                        <td><?= htmlspecialchars($activity['end_date']) ?></td>
-                        <td><?= htmlspecialchars($activity['venue']) ?></td>
-                        <td><?= htmlspecialchars($activity['address']) ?></td>
-                        <td><?= htmlspecialchars($activity['website']) ?></td>
-                        <td><?= htmlspecialchars($activity['email']) ?></td>
-                        <td>$<?= htmlspecialchars($activity['cost']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="row justify-content-start">
+            <?php foreach ($activities as $activity): ?>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body text-start">
+                            <h5 class="card-title"><?= htmlspecialchars($activity['venue']) ?></h5>
+                            <p class="card-text">
+                                <strong>Start Date:</strong> <?= htmlspecialchars($activity['start_date']) ?><br>
+                                <strong>End Date:</strong> <?= htmlspecialchars($activity['end_date']) ?><br>
+                                <strong>Start Time:</strong> <?= htmlspecialchars($activity['start_time']) ?><br>
+                                <strong>End Time:</strong> <?= htmlspecialchars($activity['end_time']) ?><br>
+                                <strong>Address:</strong> <?= htmlspecialchars($activity['address']) ?><br>
+                                <strong>Website:</strong> <?= htmlspecialchars($activity['website']) ?><br>
+                                <strong>Email:</strong> <?= htmlspecialchars($activity['email']) ?><br>
+                                <strong>Cost:</strong> $<?= htmlspecialchars($activity['cost']) ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 
     <?php if (!empty($car_rentals)): ?>
         <h3>Car Rentals</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Car Type</th>
-                    <th>Pickup Location</th>
-                    <th>Dropoff Location</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($car_rentals as $car_rental): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($car_rental['start_date']) ?></td>
-                        <td><?= htmlspecialchars($car_rental['end_date']) ?></td>
-                        <td><?= htmlspecialchars($car_rental['car_type']) ?></td>
-                        <td><?= htmlspecialchars($car_rental['pickup_location']) ?></td>
-                        <td><?= htmlspecialchars($car_rental['dropoff_location']) ?></td>
-                        <td>$<?= htmlspecialchars($car_rental['cost']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="row justify-content-start">
+            <?php foreach ($car_rentals as $car_rental): ?>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body text-start">
+                            <h5 class="card-title"><?= htmlspecialchars($car_rental['rental_agency']) ?></h5>
+                            <p class="card-text">
+                                <strong>Start Date:</strong> <?= htmlspecialchars($car_rental['start_date']) ?><br>
+                                <strong>End Date:</strong> <?= htmlspecialchars($car_rental['end_date']) ?><br>
+                                <strong>Start Time:</strong> <?= htmlspecialchars($car_rental['start_time']) ?><br>
+                                <strong>End Time:</strong> <?= htmlspecialchars($car_rental['end_time']) ?><br>
+                                <strong>Website:</strong> <?= htmlspecialchars($car_rental['website']) ?><br>
+                                <strong>Email:</strong> <?= htmlspecialchars($car_rental['email']) ?><br>
+                                <strong>Phone:</strong> <?= htmlspecialchars($car_rental['phone']) ?><br>
+                                <strong>Cost:</strong> $<?= htmlspecialchars($car_rental['cost']) ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 
     <?php if (!empty($concerts)): ?>
         <h3>Concerts</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Venue</th>
-                    <th>Address</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($concerts as $concert): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($concert['date']) ?></td>
-                        <td><?= htmlspecialchars($concert['venue']) ?></td>
-                        <td><?= htmlspecialchars($concert['address']) ?></td>
-                        <td>$<?= htmlspecialchars($concert['cost']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="row justify-content-start">
+            <?php foreach ($concerts as $concert): ?>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body text-start">
+                            <h5 class="card-title"><?= htmlspecialchars($concert['event_name']) ?></h5>
+                            <p class="card-text">
+                                <strong>Start Date:</strong> <?= htmlspecialchars($concert['start_date']) ?><br>
+                                <strong>End Date:</strong> <?= htmlspecialchars($concert['end_date']) ?><br>
+                                <strong>Start Time:</strong> <?= htmlspecialchars($concert['start_time']) ?><br>
+                                <strong>End Time:</strong> <?= htmlspecialchars($concert['end_time']) ?><br>
+                                <strong>Venue:</strong> <?= htmlspecialchars($concert['venue']) ?><br>
+                                <strong>Address:</strong> <?= htmlspecialchars($concert['address']) ?><br>
+                                <strong>Phone:</strong> <?= htmlspecialchars($concert['phone']) ?><br>
+                                <strong>Website:</strong> <?= htmlspecialchars($concert['website']) ?><br>
+                                <strong>Email:</strong> <?= htmlspecialchars($concert['email']) ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 
     <?php if (!empty($flights)): ?>
         <h3>Flights</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Departure Date</th>
-                    <th>Airline</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($flights as $flight): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($flight['departure']) ?></td>
-                        <td><?= htmlspecialchars($flight['airline']) ?></td>
-                        <td>$<?= htmlspecialchars($flight['cost']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="row justify-content-start">
+            <?php foreach ($flights as $flight): ?>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body text-start">
+                            <h5 class="card-title"><?= htmlspecialchars($flight['airline']) ?></h5>
+                            <p class="card-text">
+                                <strong>Flight:</strong> <?= htmlspecialchars($flight['flight']) ?><br>
+                                <strong>Location ID:</strong> <?= htmlspecialchars($flight['location_id']) ?><br>
+                                <strong>Cost:</strong> $<?= htmlspecialchars($flight['cost']) ?><br>
+                                <strong>Departure Date:</strong> <?= htmlspecialchars($flight['departure_date']) ?><br>
+                                <strong>Start Date:</strong> <?= htmlspecialchars($flight['start_date']) ?><br>
+                                <strong>Start Time:</strong> <?= htmlspecialchars($flight['start_time']) ?><br>
+                                <strong>End Date:</strong> <?= htmlspecialchars($flight['end_date']) ?><br>
+                                <strong>End Time:</strong> <?= htmlspecialchars($flight['end_time']) ?><br>
+                                <strong>Departure Time:</strong> <?= htmlspecialchars($flight['departure_time']) ?><br>
+                                <strong>Arrival Date:</strong> <?= htmlspecialchars($flight['arrival_date']) ?><br>
+                                <strong>Arrival Time:</strong> <?= htmlspecialchars($flight['arrival_time']) ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 
     <?php if (!empty($meetings)): ?>
         <h3>Meetings</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Venue</th>
-                    <th>Address</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($meetings as $meeting): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($meeting['date']) ?></td>
-                        <td><?= htmlspecialchars($meeting['venue']) ?></td>
-                        <td><?= htmlspecialchars($meeting['address']) ?></td>
-                        <td>$<?= htmlspecialchars($meeting['cost']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="row justify-content-start">
+            <?php foreach ($meetings as $meeting): ?>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body text-start">
+                            <h5 class="card-title"><?= htmlspecialchars($meeting['event_name']) ?></h5>
+                            <p class="card-text">
+                                <strong>Start Date:</strong> <?= htmlspecialchars($meeting['start_date']) ?><br>
+                                <strong>End Date:</strong> <?= htmlspecialchars($meeting['end_date']) ?><br>
+                                <strong>Start Time:</strong> <?= htmlspecialchars($meeting['start_time']) ?><br>
+                                <strong>End Time:</strong> <?= htmlspecialchars($meeting['end_time']) ?><br>
+                                <strong>Venue:</strong> <?= htmlspecialchars($meeting['venue']) ?><br>
+                                <strong>Address:</strong> <?= htmlspecialchars($meeting['address']) ?><br>
+                                <strong>Phone:</strong> <?= htmlspecialchars($meeting['phone']) ?><br>
+                                <strong>Website:</strong> <?= htmlspecialchars($meeting['website']) ?><br>
+                                <strong>Email:</strong> <?= htmlspecialchars($meeting['email']) ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 
     <?php if (!empty($restaurants)): ?>
         <h3>Restaurants</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Restaurant</th>
-                    <th>Address</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($restaurants as $restaurant): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($restaurant['date']) ?></td>
-                        <td><?= htmlspecialchars($restaurant['name']) ?></td>
-                        <td><?= htmlspecialchars($restaurant['address']) ?></td>
-                        <td>$<?= htmlspecialchars($restaurant['cost']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="row justify-content-start">
+            <?php foreach ($restaurants as $restaurant): ?>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body text-start">
+                            <h5 class="card-title"><?= htmlspecialchars($restaurant['cuisine']) ?></h5>
+                            <p class="card-text">
+                                <strong>Start Date:</strong> <?= htmlspecialchars($restaurant['start_date']) ?><br>
+                                <strong>End Date:</strong> <?= htmlspecialchars($restaurant['end_date']) ?><br>
+                                <strong>Start Time:</strong> <?= htmlspecialchars($restaurant['start_time']) ?><br>
+                                <strong>End Time:</strong> <?= htmlspecialchars($restaurant['end_time']) ?><br>
+                                <strong>Address:</strong> <?= htmlspecialchars($restaurant['address']) ?><br>
+                                <strong>Phone:</strong> <?= htmlspecialchars($restaurant['phone']) ?><br>
+                                <strong>Website:</strong> <?= htmlspecialchars($restaurant['website']) ?><br>
+                                <strong>Email:</strong> <?= htmlspecialchars($restaurant['email']) ?><br>
+                                <strong>Party Size:</strong> <?= htmlspecialchars($restaurant['party_size']) ?><br>
+                                <strong>Dress Code:</strong> <?= htmlspecialchars($restaurant['dress_code']) ?><br>
+                                <strong>Price:</strong> $<?= htmlspecialchars($restaurant['price']) ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 
     <?php if (!empty($transportations)): ?>
         <h3>Transportations</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($transportations as $transportation): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($transportation['date']) ?></td>
-                        <td><?= htmlspecialchars($transportation['type']) ?></td>
-                        <td>$<?= htmlspecialchars($transportation['cost']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="row justify-content-start">
+            <?php foreach ($transportations as $transportation): ?>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body text-start">
+                            <h5 class="card-title"><?= htmlspecialchars($transportation['vehicle_info']) ?></h5>
+                            <p class="card-text">
+                                <strong>Departure Date:</strong> <?= htmlspecialchars($transportation['departure_date']) ?><br>
+                                <strong>Departure Time:</strong> <?= htmlspecialchars($transportation['departure_time']) ?><br>
+                                <strong>Arrival Date:</strong> <?= htmlspecialchars($transportation['arrival_date']) ?><br>
+                                <strong>Arrival Time:</strong> <?= htmlspecialchars($transportation['arrival_time']) ?><br>
+                                <strong>Address:</strong> <?= htmlspecialchars($transportation['address']) ?><br>
+                                <strong>Location Name:</strong> <?= htmlspecialchars($transportation['location_name']) ?><br>
+                                <strong>Phone:</strong> <?= htmlspecialchars($transportation['phone']) ?><br>
+                                <strong>Website:</strong> <?= htmlspecialchars($transportation['website']) ?><br>
+                                <strong>Email:</strong> <?= htmlspecialchars($transportation['email']) ?><br>
+                                <strong>Vehicle Description:</strong>
+                                <?= htmlspecialchars($transportation['vehicle_description']) ?><br>
+                                <strong>Number of Passengers:</strong>
+                                <?= htmlspecialchars($transportation['number_of_passengers']) ?><br>
+                                <strong>Transportation Cost:</strong>
+                                $<?= htmlspecialchars($transportation['transportation_cost']) ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 </div>

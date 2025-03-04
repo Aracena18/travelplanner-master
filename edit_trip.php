@@ -1,4 +1,5 @@
 <?php
+// filepath: /c:/xampp/htdocs/travelplanner-master/edit_trip.php
 include 'db.php';
 session_start();
 
@@ -7,44 +8,54 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Generate a unique trip ID if not already present in the URL
 if (!isset($_GET['trip_id'])) {
-    $trip_id = random_int(100000, 999999);
-    header("Location: create_trip.php?trip_id=$trip_id");
-    exit;
+    die("Trip ID is missing.");
 } else {
     $trip_id = $_GET['trip_id'];
 }
 
+// Fetch trip details
+$stmt = $pdo->prepare("SELECT * FROM trips WHERE trip_id = ? AND user_id = ?");
+$stmt->execute([$trip_id, $_SESSION['user_id']]);
+$trip = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$trip) {
+    die("Trip not found or you do not have permission to edit this trip.");
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_SESSION['user_id'];
-    $trip_name = $_POST['trip_name'];
-    $destination = $_POST['destination'];
-    $hotel = $_POST['hotel'];
-    $adults_num = intval($_POST['adults_num']);
-    $childs_num = intval($_POST['childs_num']);
-    $start_date = $_POST['start_date'];
-    $end_date = $_POST['end_date'];
+    try {
+        $trip_name = $_POST['trip_name'];
+        $destination = $_POST['destination'];
+        $hotel = $_POST['hotel'];
+        $adults_num = intval($_POST['adults_num']);
+        $childs_num = intval($_POST['childs_num']);
+        $start_date = $_POST['start_date'];
+        $end_date = $_POST['end_date'];
 
-    // Calculate number of nights
-    $start_date_obj = new DateTime($start_date);
-    $end_date_obj = new DateTime($end_date);
-    $number_of_nights = max($start_date_obj->diff($end_date_obj)->days, 1);
+        // Calculate number of nights
+        $start_date_obj = new DateTime($start_date);
+        $end_date_obj = new DateTime($end_date);
+        $number_of_nights = max($start_date_obj->diff($end_date_obj)->days, 1);
 
-    // Retrieve hotel price from the selected hotel
-    $stmt = $pdo->prepare("SELECT price FROM hotels WHERE name = ?");
-    $stmt->execute([$hotel]);
-    $selected_hotel_price = $stmt->fetchColumn();
+        // Retrieve hotel price from the selected hotel
+        $stmt = $pdo->prepare("SELECT price FROM hotels WHERE name = ?");
+        $stmt->execute([$hotel]);
+        $selected_hotel_price = $stmt->fetchColumn();
 
-    // Calculate estimated cost
-    $estimated_cost = ($selected_hotel_price * $number_of_nights) +
-        ($childs_num * ($selected_hotel_price * 0.80) * $number_of_nights);
+        // Calculate estimated cost
+        $estimated_cost = ($selected_hotel_price * $number_of_nights) +
+            ($childs_num * ($selected_hotel_price * 0.80) * $number_of_nights);
 
-    // Insert trip with estimated cost
-    $stmt = $pdo->prepare("INSERT INTO trips (trip_id, user_id, trip_name, destination, hotel, adults_num, childs_num, start_date, end_date, estimated_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$trip_id, $user_id, $trip_name, $destination, $hotel, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost]);
+        // Update trip with estimated cost
+        $stmt = $pdo->prepare("UPDATE trips SET trip_name = ?, destination = ?, hotel = ?, adults_num = ?, childs_num = ?, start_date = ?, end_date = ?, estimated_cost = ? WHERE trip_id = ? AND user_id = ?");
+        $stmt->execute([$trip_name, $destination, $hotel, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost, $trip_id, $_SESSION['user_id']]);
 
-    header("Location: edit_trip.php?trip_id=$trip_id");
+        echo json_encode(['success' => true, 'trip_id' => $trip_id]);
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'An error occurred while saving the trip.']);
+    }
     exit;
 }
 
@@ -78,7 +89,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Trip</title>
+    <title>Edit Trip</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -98,18 +109,21 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 <body>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Create Trip</h1>
-        <form method="POST" class="bg-light p-4 rounded shadow-sm" style="max-width: 800px; margin: auto;">
+        <h1 class="text-center mb-4">Edit Trip</h1>
+        <form id="edit-trip-form" class="bg-light p-4 rounded shadow-sm" style="max-width: 800px; margin: auto;">
             <div class="row g-3">
                 <div class="col-md-6">
                     <label for="trip_name" class="form-label">Trip Name</label>
-                    <input type="text" id="trip_name" name="trip_name" class="form-control form-control-sm" required>
+                    <input type="text" id="trip_name" name="trip_name" class="form-control form-control-sm"
+                        value="<?= htmlspecialchars($trip['trip_name']) ?>" required>
                 </div>
                 <div class="col-md-6">
                     <label for="destination" class="form-label">Destination</label>
                     <select id="destination" name="destination" class="form-select form-select-sm" required>
                         <?php foreach ($destinations as $location_id => $location): ?>
-                            <option value="<?= $location_id ?>"> <?= htmlspecialchars($location['name']) ?> </option>
+                            <option value="<?= $location_id ?>"
+                                <?= $location_id == $trip['destination'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($location['name']) ?> </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -130,23 +144,27 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
                 <div id="map" style="height: 400px;" class="mb-4"></div>
 
-                <input type="hidden" id="hotel" name="hotel">
+                <input type="hidden" id="hotel" name="hotel" value="<?= htmlspecialchars($trip['hotel']) ?>">
 
                 <div class="col-md-6">
                     <label for="adults_num" class="form-label">No. of Adults</label>
-                    <input type="text" id="adults_num" name="adults_num" class="form-control form-control-sm" required>
+                    <input type="text" id="adults_num" name="adults_num" class="form-control form-control-sm"
+                        value="<?= htmlspecialchars($trip['adults_num']) ?>" required>
                 </div>
                 <div class="col-md-6">
                     <label for="childs_num" class="form-label">No. of Children</label>
-                    <input type="text" id="childs_num" name="childs_num" class="form-control form-control-sm" required>
+                    <input type="text" id="childs_num" name="childs_num" class="form-control form-control-sm"
+                        value="<?= htmlspecialchars($trip['childs_num']) ?>" required>
                 </div>
                 <div class="col-md-6">
                     <label for="start_date" class="form-label">Start Date</label>
-                    <input type="date" id="start_date" name="start_date" class="form-control form-control-sm" required>
+                    <input type="date" id="start_date" name="start_date" class="form-control form-control-sm"
+                        value="<?= htmlspecialchars($trip['start_date']) ?>" required>
                 </div>
                 <div class="col-md-6">
                     <label for="end_date" class="form-label">End Date</label>
-                    <input type="date" id="end_date" name="end_date" class="form-control form-control-sm" required>
+                    <input type="date" id="end_date" name="end_date" class="form-control form-control-sm"
+                        value="<?= htmlspecialchars($trip['end_date']) ?>" required>
                 </div>
             </div>
 
@@ -154,9 +172,14 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             <div class="alert alert-info fs-5 fw-bold text-center mt-3" id="estimated-cost-display">Estimated Cost:
                 $0.00</div>
 
+            <?php
+            include 'api/sub_plans_options.php';
+            include 'api/sub_plans.php';
+            ?>
+
             <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary btn-sm">Create Trip To Add Sub Plans</button>
-                <a href="index.php" class="btn btn-secondary btn-sm">Cancel</a>
+                <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                <a href="index.php" class="btn btn-secondary btn-sm">Exit</a>
             </div>
         </form>
     </div>
@@ -175,7 +198,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
             if (hotels[destination]) {
                 hotels[destination].hotels.forEach((hotel, index) => {
-                    const isActive = index === 0 ? 'active' : '';
+                    const isActive = hotel.name === '<?= htmlspecialchars($trip['hotel']) ?>' ? 'active' : '';
                     const card = `
                         <div class="carousel-item ${isActive}" data-hotel="${hotel.name}" data-latitude="${hotel.latitude}" data-longitude="${hotel.longitude}">
                             <div class="card">
@@ -276,6 +299,31 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             const tripId = <?= json_encode($trip_id); ?>;
             window.location.href = `${page}?trip_id=${tripId}`;
         }
+
+        // Handle form submission with AJAX
+        document.getElementById('edit-trip-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            formData.append('trip_id', <?= json_encode($trip_id); ?>);
+
+            fetch('edit_trip.php?trip_id=<?= $trip_id ?>', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Trip updated successfully!');
+                    } else {
+                        alert('Failed to update the trip: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the trip.');
+                });
+        });
     </script>
 </body>
 

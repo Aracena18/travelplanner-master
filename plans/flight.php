@@ -5,7 +5,7 @@ session_start();
 
 // Get the trip_id from the URL
 if (!isset($_GET['trip_id'])) {
-    header('Location: ../create_trip.php');
+    header('Location: ../edit_trip.php');
     exit;
 } else {
     $trip_id = $_GET['trip_id'];
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $pdo->prepare("INSERT INTO flights (trip_id, departure, arrival, airline, cost, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
     $stmt->execute([$trip_id, $departure, $arrival, $airline, $flight_cost]);
 
-    header("Location: ../create_trip.php?trip_id=$trip_id");
+    header("Location: ../edit_trip.php?trip_id=$trip_id");
     exit;
 }
 ?>

@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 // Get the trip_id from the URL
 if (!isset($_GET['trip_id'])) {
-    header('Location: ../create_trip.php');
+    header('Location: ../edit_trip.php');
     exit;
 } else {
     $trip_id = $_GET['trip_id'];
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $pdo->prepare("INSERT INTO restaurant (trip_id, address, phone, website, email, cuisine, party_size, dress_code, price, start_time, end_time, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
     $stmt->execute([$trip_id, $address, $phone, $website, $email, $cuisine, $party_size, $dress_code, $price, $start_time, $end_time]);
 
-    header('Location: ../create_trip.php?trip_id=' . $trip_id);
+    header('Location: ../edit_trip.php?trip_id=' . $trip_id);
     exit;
 }
 ?>
