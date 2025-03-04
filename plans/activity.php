@@ -18,7 +18,9 @@ if (!isset($_GET['trip_id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $start_date = $_POST['start_date'];
+    $start_time = $_POST['start_time'];
     $end_date = $_POST['end_date'];
+    $end_time = $_POST['end_time'];
     $venue = $_POST['venue'];
     $address = $_POST['address'];
     $website = $_POST['website'];
@@ -26,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cost = $_POST['cost'];
 
     // Insert activity details into the database
-    $stmt = $pdo->prepare("INSERT INTO activity (trip_id, start_date, end_date, venue, address, website, email, cost, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->execute([$trip_id, $start_date, $end_date, $venue, $address, $website, $email, $cost]);
+    $stmt = $pdo->prepare("INSERT INTO activity (trip_id, start_date, start_time, end_date, end_time, venue, address, website, email, cost, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->execute([$trip_id, $start_date, $start_time, $end_date, $end_time, $venue, $address, $website, $email, $cost]);
 
     header("Location: ../create_trip.php?trip_id=$trip_id");
     exit;
@@ -53,8 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="date" id="start_date" name="start_date" class="form-control" required>
             </div>
             <div class="mb-3">
+                <label for="start_time" class="form-label">Start Time</label>
+                <input type="time" id="start_time" name="start_time" class="form-control" required>
+            </div>
+            <div class="mb-3">
                 <label for="end_date" class="form-label">End Date</label>
                 <input type="date" id="end_date" name="end_date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="end_time" class="form-label">End Time</label>
+                <input type="time" id="end_time" name="end_time" class="form-control" required>
             </div>
             <div class="mb-3">
                 <label for="venue" class="form-label">Venue</label>

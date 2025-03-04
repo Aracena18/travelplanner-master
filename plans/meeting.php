@@ -8,8 +8,23 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Get the trip_id from the URL
+if (!isset($_GET['trip_id'])) {
+    header('Location: ../create_trip.php');
+    exit;
+} else {
+    $trip_id = $_GET['trip_id'];
+}
+
+// Check if the trip_id exists in the trips table
+$stmt = $pdo->prepare("SELECT id FROM trips WHERE id = ?");
+$stmt->execute([$trip_id]);
+if ($stmt->rowCount() == 0) {
+    header('Location: ../create_trip.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_SESSION['user_id'];
     $event_name = $_POST['event_name'];
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
@@ -22,10 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
 
     // Insert meeting details into the database
-    $stmt = $pdo->prepare("INSERT INTO meeting (user_id, event_name, start_date, end_date, start_time, end_time, venue, address, phone, website, email, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->execute([$user_id, $event_name, $start_date, $end_date, $start_time, $end_time, $venue, $address, $phone, $website, $email]);
+    $stmt = $pdo->prepare("INSERT INTO meeting (trip_id, event_name, start_date, end_date, start_time, end_time, venue, address, phone, website, email, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->execute([$trip_id, $event_name, $start_date, $end_date, $start_time, $end_time, $venue, $address, $phone, $website, $email]);
 
-    header('Location: index.php');
+    header('Location: ../create_trip.php?trip_id=' . $trip_id);
     exit;
 }
 ?>
@@ -53,12 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="date" id="start_date" name="start_date" class="form-control" required>
             </div>
             <div class="mb-3">
-                <label for="end_date" class="form-label">End Date</label>
-                <input type="date" id="end_date" name="end_date" class="form-control" required>
-            </div>
-            <div class="mb-3">
                 <label for="start_time" class="form-label">Start Time</label>
                 <input type="time" id="start_time" name="start_time" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" id="end_date" name="end_date" class="form-control" required>
             </div>
             <div class="mb-3">
                 <label for="end_time" class="form-label">End Time</label>
@@ -86,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Add Meeting</button>
-                <a href="index.php" class="btn btn-secondary">Cancel</a>
+                <a href="../create_trip.php?trip_id=<?= $trip_id ?>" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

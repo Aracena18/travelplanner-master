@@ -150,21 +150,21 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 </div>
             </div>
 
-            <?php
-            include 'api/sub_plans_options.php';
-            include 'api/sub_plans.php';
-            ?>
-
             <!-- Estimated Cost Display -->
             <div class="alert alert-info fs-5 fw-bold text-center mt-3" id="estimated-cost-display">Estimated Cost:
                 $0.00</div>
 
             <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary btn-sm">Create Trip</button>
+                <button type="submit" class="btn btn-primary btn-sm">Create Trip and Add Sub Plans</button>
                 <a href="index.php" class="btn btn-secondary btn-sm">Cancel</a>
             </div>
         </form>
     </div>
+
+    <?php
+    include 'api/sub_plans_options.php';
+    include 'api/sub_plans.php';
+    ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>

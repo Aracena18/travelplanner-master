@@ -8,22 +8,31 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Get the trip_id from the URL
+if (!isset($_GET['trip_id'])) {
+    header('Location: ../create_trip.php');
+    exit;
+} else {
+    $trip_id = $_GET['trip_id'];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_SESSION['user_id'];
-    $address = $_POST['address'];
-    $phone = $_POST['phone'];
-    $website = $_POST['website'];
-    $email = $_POST['email'];
+    $address = $_POST['address'] ?? null;
+    $phone = $_POST['phone'] ?? null;
+    $website = $_POST['website'] ?? null;
+    $email = $_POST['email'] ?? null;
     $cuisine = $_POST['cuisine'];
     $party_size = $_POST['party_size'];
-    $dress_code = $_POST['dress_code'];
+    $dress_code = $_POST['dress_code'] ?? null;
     $price = $_POST['price'];
+    $start_time = $_POST['start_time'];
+    $end_time = $_POST['end_time'];
 
     // Insert restaurant details into the database
-    $stmt = $pdo->prepare("INSERT INTO restaurant (address, phone, website, email, cuisine, party_size, dress_code, price, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->execute([$address, $phone, $website, $email, $cuisine, $party_size, $dress_code, $price]);
+    $stmt = $pdo->prepare("INSERT INTO restaurant (trip_id, address, phone, website, email, cuisine, party_size, dress_code, price, start_time, end_time, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->execute([$trip_id, $address, $phone, $website, $email, $cuisine, $party_size, $dress_code, $price, $start_time, $end_time]);
 
-    header('Location: index.php');
+    header('Location: ../create_trip.php?trip_id=' . $trip_id);
     exit;
 }
 ?>
@@ -44,11 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST" class="bg-light p-4 rounded shadow-sm" style="max-width: 600px; margin: auto;">
             <div class="mb-3">
                 <label for="address" class="form-label">Address</label>
-                <input type="text" id="address" name="address" class="form-control" required>
+                <input type="text" id="address" name="address" class="form-control">
             </div>
             <div class="mb-3">
                 <label for="phone" class="form-label">Phone</label>
-                <input type="text" id="phone" name="phone" class="form-control" required>
+                <input type="text" id="phone" name="phone" class="form-control">
             </div>
             <div class="mb-3">
                 <label for="website" class="form-label">Website</label>
@@ -74,9 +83,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="price" class="form-label">Price</label>
                 <input type="number" step="0.01" id="price" name="price" class="form-control" required>
             </div>
+            <div class="mb-3">
+                <label for="start_time" class="form-label">Start Time</label>
+                <input type="time" id="start_time" name="start_time" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="end_time" class="form-label">End Time</label>
+                <input type="time" id="end_time" name="end_time" class="form-control" required>
+            </div>
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Add Restaurant</button>
-                <a href="index.php" class="btn btn-secondary">Cancel</a>
+                <a href="../create_trip.php?trip_id=<?= $trip_id ?>" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

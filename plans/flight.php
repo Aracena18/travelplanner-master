@@ -1,5 +1,5 @@
 <?php
-// filepath: /c:/xampp/htdocs/travelplanner-master/plans/flights.php
+// filepath: /c:/xampp/htdocs/travelplanner-master/plans/flight.php
 include '../db.php';
 session_start();
 
@@ -14,15 +14,18 @@ if (!isset($_GET['trip_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $departure_date = $_POST['departure_date'];
     $departure_time = $_POST['departure_time'];
+    $arrival_date = $_POST['arrival_date'];
+    $arrival_time = $_POST['arrival_time'];
     $airline = $_POST['airline'];
     $flight_cost = $_POST['flight_cost'];
 
-    // Combine date and time for departure
+    // Combine date and time for departure and arrival
     $departure = $departure_date . ' ' . $departure_time;
+    $arrival = $arrival_date . ' ' . $arrival_time;
 
     // Insert flight details into the database
-    $stmt = $pdo->prepare("INSERT INTO flights (trip_id, departure, airline, cost, created_at) VALUES (?, ?, ?, ?, NOW())");
-    $stmt->execute([$trip_id, $departure, $airline, $flight_cost]);
+    $stmt = $pdo->prepare("INSERT INTO flights (trip_id, departure, arrival, airline, cost, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
+    $stmt->execute([$trip_id, $departure, $arrival, $airline, $flight_cost]);
 
     header("Location: ../create_trip.php?trip_id=$trip_id");
     exit;
@@ -50,6 +53,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label for="departure_time" class="form-label">Departure Time</label>
                 <input type="time" id="departure_time" name="departure_time" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="arrival_date" class="form-label">Arrival Date</label>
+                <input type="date" id="arrival_date" name="arrival_date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="arrival_time" class="form-label">Arrival Time</label>
+                <input type="time" id="arrival_time" name="arrival_time" class="form-control" required>
             </div>
             <div class="mb-3">
                 <label for="airline" class="form-label">Airline</label>

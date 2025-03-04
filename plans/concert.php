@@ -8,8 +8,15 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Get the trip_id from the URL
+if (!isset($_GET['trip_id'])) {
+    header('Location: ../create_trip.php');
+    exit;
+} else {
+    $trip_id = $_GET['trip_id'];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_SESSION['user_id'];
     $event_name = $_POST['event_name'];
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
@@ -17,15 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $end_time = $_POST['end_time'];
     $venue = $_POST['venue'];
     $address = $_POST['address'];
-    $phone = $_POST['phone'];
-    $website = $_POST['website'];
-    $email = $_POST['email'];
+    $phone = $_POST['phone'] ?? null;
+    $website = $_POST['website'] ?? null;
+    $email = $_POST['email'] ?? null;
 
     // Insert concert details into the database
-    $stmt = $pdo->prepare("INSERT INTO concert (user_id, event_name, start_date, end_date, start_time, end_time, venue, address, phone, website, email, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->execute([$user_id, $event_name, $start_date, $end_date, $start_time, $end_time, $venue, $address, $phone, $website, $email]);
+    $stmt = $pdo->prepare("INSERT INTO concert (trip_id, event_name, start_date, end_date, start_time, end_time, venue, address, phone, website, email, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->execute([$trip_id, $event_name, $start_date, $end_date, $start_time, $end_time, $venue, $address, $phone, $website, $email]);
 
-    header('Location: index.php');
+    header('Location: ../create_trip.php?trip_id=' . $trip_id);
     exit;
 }
 ?>
@@ -86,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Add Concert</button>
-                <a href="index.php" class="btn btn-secondary">Cancel</a>
+                <a href="../create_trip.php?trip_id=<?= $trip_id ?>" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

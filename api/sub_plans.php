@@ -1,6 +1,6 @@
 <?php
 // filepath: /c:/xampp/htdocs/travelplanner-master/api/sub_plans.php
-include '../db.php';
+include 'db.php';
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -21,7 +21,7 @@ if (!isset($_GET['trip_id'])) {
 
 // Fetch activities for the current trip
 $activities = [];
-$stmt = $pdo->prepare("SELECT * FROM activity WHERE trip_id = ? ORDER BY start_date");
+$stmt = $pdo->prepare("SELECT * FROM activity WHERE trip_id = ? ORDER BY created_at");
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $activities[] = $row;
@@ -29,7 +29,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 // Fetch car rentals for the current trip
 $car_rentals = [];
-$stmt = $pdo->prepare("SELECT * FROM car_rental WHERE trip_id = ? ORDER BY start_date");
+$stmt = $pdo->prepare("SELECT * FROM car_rental WHERE trip_id = ? ORDER BY created_at");
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $car_rentals[] = $row;
@@ -37,7 +37,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 // Fetch concerts for the current trip
 $concerts = [];
-$stmt = $pdo->prepare("SELECT * FROM concert WHERE trip_id = ? ORDER BY date");
+$stmt = $pdo->prepare("SELECT * FROM concert WHERE trip_id = ? ORDER BY created_at");
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $concerts[] = $row;
@@ -45,7 +45,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 // Fetch flights for the current trip
 $flights = [];
-$stmt = $pdo->prepare("SELECT * FROM flights WHERE trip_id = ? ORDER BY departure");
+$stmt = $pdo->prepare("SELECT * FROM flights WHERE trip_id = ? ORDER BY created_at");
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $flights[] = $row;
@@ -53,7 +53,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 // Fetch meetings for the current trip
 $meetings = [];
-$stmt = $pdo->prepare("SELECT * FROM meeting WHERE trip_id = ? ORDER BY date");
+$stmt = $pdo->prepare("SELECT * FROM meeting WHERE trip_id = ? ORDER BY created_at");
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $meetings[] = $row;
@@ -61,7 +61,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 // Fetch restaurants for the current trip
 $restaurants = [];
-$stmt = $pdo->prepare("SELECT * FROM restaurant WHERE trip_id = ? ORDER BY date");
+$stmt = $pdo->prepare("SELECT * FROM restaurant WHERE trip_id = ? ORDER BY created_at");
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $restaurants[] = $row;
@@ -69,7 +69,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
 // Fetch transportation for the current trip
 $transportations = [];
-$stmt = $pdo->prepare("SELECT * FROM transportation WHERE trip_id = ? ORDER BY date");
+$stmt = $pdo->prepare("SELECT * FROM transportation WHERE trip_id = ? ORDER BY created_at");
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $transportations[] = $row;

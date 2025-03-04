@@ -8,27 +8,34 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Get the trip_id from the URL
+if (!isset($_GET['trip_id'])) {
+    header('Location: ../create_trip.php');
+    exit;
+} else {
+    $trip_id = $_GET['trip_id'];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_SESSION['user_id'];
-    $event_name = $_POST['event_name'];
     $departure_date = $_POST['departure_date'];
     $departure_time = $_POST['departure_time'];
     $arrival_date = $_POST['arrival_date'];
     $arrival_time = $_POST['arrival_time'];
     $address = $_POST['address'];
     $location_name = $_POST['location_name'];
-    $phone = $_POST['phone'];
-    $website = $_POST['website'];
-    $email = $_POST['email'];
+    $phone = $_POST['phone'] ?? null;
+    $website = $_POST['website'] ?? null;
+    $email = $_POST['email'] ?? null;
     $vehicle_info = $_POST['vehicle_info'];
-    $vehicle_description = $_POST['vehicle_description'];
+    $vehicle_description = $_POST['vehicle_description'] ?? null;
     $number_of_passengers = $_POST['number_of_passengers'];
+    $transportation_cost = $_POST['transportation_cost'];
 
     // Insert transportation details into the database
-    $stmt = $pdo->prepare("INSERT INTO transportation (user_id, event_name, departure_date, departure_time, arrival_date, arrival_time, address, location_name, phone, website, email, vehicle_info, vehicle_description, number_of_passengers, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->execute([$user_id, $event_name, $departure_date, $departure_time, $arrival_date, $arrival_time, $address, $location_name, $phone, $website, $email, $vehicle_info, $vehicle_description, $number_of_passengers]);
+    $stmt = $pdo->prepare("INSERT INTO transportation (trip_id, departure_date, departure_time, arrival_date, arrival_time, address, location_name, phone, website, email, vehicle_info, vehicle_description, number_of_passengers, transportation_cost, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->execute([$trip_id, $departure_date, $departure_time, $arrival_date, $arrival_time, $address, $location_name, $phone, $website, $email, $vehicle_info, $vehicle_description, $number_of_passengers, $transportation_cost]);
 
-    header('Location: index.php');
+    header("Location: ../create_trip.php?trip_id=$trip_id");
     exit;
 }
 ?>
@@ -47,10 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container mt-5">
         <h1 class="text-center mb-4">Add Transportation</h1>
         <form method="POST" class="bg-light p-4 rounded shadow-sm" style="max-width: 600px; margin: auto;">
-            <div class="mb-3">
-                <label for="event_name" class="form-label">Event Name</label>
-                <input type="text" id="event_name" name="event_name" class="form-control" required>
-            </div>
             <div class="mb-3">
                 <label for="departure_date" class="form-label">Departure Date</label>
                 <input type="date" id="departure_date" name="departure_date" class="form-control" required>
@@ -100,9 +103,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="number" id="number_of_passengers" name="number_of_passengers" class="form-control"
                     required>
             </div>
+            <div class="mb-3">
+                <label for="transportation_cost" class="form-label">Transportation Cost</label>
+                <input type="number" step="0.01" id="transportation_cost" name="transportation_cost"
+                    class="form-control" required>
+            </div>
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Add Transportation</button>
-                <a href="index.php" class="btn btn-secondary">Cancel</a>
+                <a href="../create_trip.php?trip_id=<?= $trip_id ?>" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
