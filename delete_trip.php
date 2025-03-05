@@ -7,30 +7,44 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Change 'user_id' to 'id' to match the URL parameter
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Invalid user ID");
+    die("Invalid trip ID");
 }
 
-$id = $_GET['id'];  // Now using 'id' instead of 'user_id'
+$trip_id = $_GET['id'];
 
 // Verify the trip exists before deleting
 $stmt = $pdo->prepare("SELECT * FROM trips WHERE trip_id = ? AND user_id = ?");
-$stmt->execute([$id, $_SESSION['user_id']]);
+$stmt->execute([$trip_id, $_SESSION['user_id']]);
 $trip = $stmt->fetch();
 
 if (!$trip) {
     die("No matching record found.");
 }
 
-// Delete the trip
-$stmt = $pdo->prepare("DELETE FROM trips WHERE trip_id = ? AND user_id = ?");
-$result = $stmt->execute([$id, $_SESSION['user_id']]);
+try {
+    // Begin transaction
+    $pdo->beginTransaction();
 
-if (!$result) {
-    die("Failed to delete record.");
+    // Delete related records in child tables
+    $tables = ['car_rental', 'activity', 'concert', 'flights', 'meeting', 'restaurant', 'transportation'];
+    foreach ($tables as $table) {
+        $stmt = $pdo->prepare("DELETE FROM $table WHERE trip_id = ?");
+        $stmt->execute([$trip_id]);
+    }
+
+    // Delete the trip
+    $stmt = $pdo->prepare("DELETE FROM trips WHERE trip_id = ? AND user_id = ?");
+    $stmt->execute([$trip_id, $_SESSION['user_id']]);
+
+    // Commit transaction
+    $pdo->commit();
+
+    // Redirect to index
+    header('Location: index.php');
+    exit;
+} catch (Exception $e) {
+    // Rollback transaction in case of error
+    $pdo->rollBack();
+    die("Failed to delete record: " . $e->getMessage());
 }
-
-// Redirect to index
-header('Location: index.php');
-exit;
