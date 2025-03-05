@@ -19,13 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $airline = $_POST['airline'];
     $flight_cost = $_POST['flight_cost'];
 
-    // Combine date and time for departure and arrival
-    $departure = $departure_date . ' ' . $departure_time;
-    $arrival = $arrival_date . ' ' . $arrival_time;
-
     // Insert flight details into the database
-    $stmt = $pdo->prepare("INSERT INTO flights (trip_id, departure, arrival, airline, cost, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
-    $stmt->execute([$trip_id, $departure, $arrival, $airline, $flight_cost]);
+    $stmt = $pdo->prepare("INSERT INTO flights (trip_id, departure_date, departure_time, arrival_date, arrival_time, airline, cost, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->execute([$trip_id, $departure_date, $departure_time, $arrival_date, $arrival_time, $airline, $flight_cost]);
 
     header("Location: ../edit_trip.php?trip_id=$trip_id");
     exit;
@@ -72,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-primary">Add Flight</button>
-                <a href="../create_trip.php?trip_id=<?= $trip_id ?>" class="btn btn-secondary">Cancel</a>
+                <a href="../edit_trip.php?trip_id=<?= $trip_id ?>" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>

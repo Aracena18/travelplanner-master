@@ -19,12 +19,16 @@ if (!isset($_GET['trip_id'])) {
     $trip_id = $_GET['trip_id'];
 }
 
+// Initialize total cost
+$total_cost = 0;
+
 // Fetch activities for the current trip
 $activities = [];
 $stmt = $pdo->prepare("SELECT * FROM activity WHERE trip_id = ? ORDER BY created_at");
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $activities[] = $row;
+    $total_cost += $row['cost'];
 }
 
 // Fetch car rentals for the current trip
@@ -33,6 +37,7 @@ $stmt = $pdo->prepare("SELECT * FROM car_rental WHERE trip_id = ? ORDER BY creat
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $car_rentals[] = $row;
+    $total_cost += $row['cost'];
 }
 
 // Fetch concerts for the current trip
@@ -41,6 +46,7 @@ $stmt = $pdo->prepare("SELECT * FROM concert WHERE trip_id = ? ORDER BY created_
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $concerts[] = $row;
+    $total_cost += $row['cost'];
 }
 
 // Fetch flights for the current trip
@@ -49,6 +55,7 @@ $stmt = $pdo->prepare("SELECT * FROM flights WHERE trip_id = ? ORDER BY created_
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $flights[] = $row;
+    $total_cost += $row['cost'];
 }
 
 // Fetch meetings for the current trip
@@ -57,6 +64,7 @@ $stmt = $pdo->prepare("SELECT * FROM meeting WHERE trip_id = ? ORDER BY created_
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $meetings[] = $row;
+    $total_cost += $row['cost'];
 }
 
 // Fetch restaurants for the current trip
@@ -65,6 +73,7 @@ $stmt = $pdo->prepare("SELECT * FROM restaurant WHERE trip_id = ? ORDER BY creat
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $restaurants[] = $row;
+    $total_cost += $row['price'];
 }
 
 // Fetch transportation for the current trip
@@ -73,6 +82,7 @@ $stmt = $pdo->prepare("SELECT * FROM transportation WHERE trip_id = ? ORDER BY c
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $transportations[] = $row;
+    $total_cost += $row['transportation_cost'];
 }
 ?>
 

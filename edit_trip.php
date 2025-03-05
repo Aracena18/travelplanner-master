@@ -32,20 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $childs_num = intval($_POST['childs_num']);
         $start_date = $_POST['start_date'];
         $end_date = $_POST['end_date'];
-
-        // Calculate number of nights
-        $start_date_obj = new DateTime($start_date);
-        $end_date_obj = new DateTime($end_date);
-        $number_of_nights = max($start_date_obj->diff($end_date_obj)->days, 1);
-
-        // Retrieve hotel price from the selected hotel
-        $stmt = $pdo->prepare("SELECT price FROM hotels WHERE name = ?");
-        $stmt->execute([$hotel]);
-        $selected_hotel_price = $stmt->fetchColumn();
-
-        // Calculate estimated cost
-        $estimated_cost = ($selected_hotel_price * $number_of_nights) +
-            ($childs_num * ($selected_hotel_price * 0.80) * $number_of_nights);
+        $estimated_cost = floatval($_POST['estimated_cost']);
 
         // Update trip with estimated cost
         $stmt = $pdo->prepare("UPDATE trips SET trip_name = ?, destination = ?, hotel = ?, adults_num = ?, childs_num = ?, start_date = ?, end_date = ?, estimated_cost = ? WHERE trip_id = ? AND user_id = ?");
@@ -80,6 +67,17 @@ $stmt = $pdo->prepare("SELECT * FROM activity WHERE trip_id = ?");
 $stmt->execute([$trip_id]);
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $activities[] = $row;
+}
+
+// Fetch sub plans for the current trip
+$sub_plans = [];
+$sub_plan_types = ['activity', 'car_rental', 'concert', 'flights', 'meeting', 'restaurant', 'transportation'];
+foreach ($sub_plan_types as $type) {
+    $stmt = $pdo->prepare("SELECT * FROM $type WHERE trip_id = ?");
+    $stmt->execute([$trip_id]);
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $sub_plans[] = $row;
+    }
 }
 ?>
 
@@ -171,6 +169,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             <!-- Estimated Cost Display -->
             <div class="alert alert-info fs-5 fw-bold text-center mt-3" id="estimated-cost-display">Estimated Cost:
                 $0.00</div>
+            <input type="hidden" id="estimated_cost" name="estimated_cost" value="0.00">
 
             <?php
             include 'api/sub_plans_options.php';
@@ -192,6 +191,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         const hotelCardsContainer = document.getElementById('hotel-cards');
         const hotels = <?= json_encode($destinations); ?>;
         const activities = <?= json_encode($activities); ?>;
+        const subPlans = <?= json_encode($sub_plans); ?>;
 
         function loadHotelsForDestination(destination) {
             hotelCardsContainer.innerHTML = '';
@@ -274,12 +274,13 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             // Calculate the estimated cost
             let estimatedCost = (hotelCost * roomsNeeded * numberOfNights);
 
-            // Add the cost of activities
-            activities.forEach(activity => {
-                estimatedCost += parseFloat(activity.cost);
+            // Add the cost of activities and other sub plans
+            subPlans.forEach(plan => {
+                estimatedCost += parseFloat(plan.cost || plan.price || plan.transportation_cost || 0);
             });
 
             document.getElementById('estimated-cost-display').textContent = `Estimated Cost: $${estimatedCost.toFixed(2)}`;
+            document.getElementById('estimated_cost').value = estimatedCost.toFixed(2);
         }
 
         // Attach event listeners to update the cost dynamically
