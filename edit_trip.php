@@ -79,14 +79,6 @@ foreach ($sub_plan_types as $type) {
         $sub_plans[] = $row;
     }
 }
-
-// Fetch estimated costs for all trips
-$total_estimated_cost = 0;
-$stmt = $pdo->prepare("SELECT estimated_cost FROM trips WHERE user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $total_estimated_cost += $row['estimated_cost'];
-}
 ?>
 
 <!DOCTYPE html>
@@ -200,7 +192,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         const hotels = <?= json_encode($destinations); ?>;
         const activities = <?= json_encode($activities); ?>;
         const subPlans = <?= json_encode($sub_plans); ?>;
-        const totalEstimatedCost = <?= json_encode($total_estimated_cost); ?>;
 
         function loadHotelsForDestination(destination) {
             hotelCardsContainer.innerHTML = '';
@@ -209,7 +200,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 hotels[destination].hotels.forEach((hotel, index) => {
                     const isActive = hotel.name === '<?= htmlspecialchars($trip['hotel']) ?>' ? 'active' : '';
                     const card = `
-                        <div class="carousel-item ${isActive}" data-hotel="${hotel.name}" data-latitude="${hotel.latitude}" data-longitude="${hotel.longitude}">
+                        <div class="carousel-item ${isActive}" data-hotel="${hotel.name}" data-latitude="${hotel.latitude}" data-longitude="${hotel.longitude}" data-price="${hotel.price}">
                             <div class="card">
                                 <img src="assets/images/${hotel.image_name}" class="card-img-top" alt="${hotel.name}">
                                 <div class="card-body">
@@ -271,8 +262,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             const endDate = new Date(document.getElementById('end_date').value);
 
             const activeHotelItem = document.querySelector('#hotel-cards .carousel-item.active');
-            const hotelCost = activeHotelItem ? parseFloat(activeHotelItem.querySelector('.text-success').textContent
-                .replace('$', '')) : 0;
+            const hotelCost = activeHotelItem ? parseFloat(activeHotelItem.getAttribute('data-price')) : 0;
 
             const numberOfNights = Math.max((endDate - startDate) / (1000 * 60 * 60 * 24), 1);
 
@@ -288,9 +278,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 estimatedCost += parseFloat(plan.cost || plan.price || plan.transportation_cost || 0);
             });
 
-            // Add the total estimated cost from the database
-            estimatedCost += totalEstimatedCost;
-
             document.getElementById('estimated-cost-display').textContent = `Estimated Cost: $${estimatedCost.toFixed(2)}`;
             document.getElementById('estimated_cost').value = estimatedCost.toFixed(2);
         }
@@ -303,10 +290,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         document.getElementById('hotel-carousel').addEventListener('slid.bs.carousel', calculateEstimatedCost);
 
         // Initial calculation on page load
-        calculateEstimatedCost();
-
-        // Load the initial hotels for the current destination
         loadHotelsForDestination(destinationSelect.value);
+        calculateEstimatedCost();
 
         function redirectTo(page) {
             const tripId = <?= json_encode($trip_id); ?>;
