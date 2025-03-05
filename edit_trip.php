@@ -79,6 +79,14 @@ foreach ($sub_plan_types as $type) {
         $sub_plans[] = $row;
     }
 }
+
+// Fetch estimated costs for all trips
+$total_estimated_cost = 0;
+$stmt = $pdo->prepare("SELECT estimated_cost FROM trips WHERE user_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $total_estimated_cost += $row['estimated_cost'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -192,6 +200,7 @@ foreach ($sub_plan_types as $type) {
         const hotels = <?= json_encode($destinations); ?>;
         const activities = <?= json_encode($activities); ?>;
         const subPlans = <?= json_encode($sub_plans); ?>;
+        const totalEstimatedCost = <?= json_encode($total_estimated_cost); ?>;
 
         function loadHotelsForDestination(destination) {
             hotelCardsContainer.innerHTML = '';
@@ -278,6 +287,9 @@ foreach ($sub_plan_types as $type) {
             subPlans.forEach(plan => {
                 estimatedCost += parseFloat(plan.cost || plan.price || plan.transportation_cost || 0);
             });
+
+            // Add the total estimated cost from the database
+            estimatedCost += totalEstimatedCost;
 
             document.getElementById('estimated-cost-display').textContent = `Estimated Cost: $${estimatedCost.toFixed(2)}`;
             document.getElementById('estimated_cost').value = estimatedCost.toFixed(2);
