@@ -1,4 +1,4 @@
-<?php
+<?php 
 include 'db.php';
 session_start();
 
@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 // Generate a unique trip ID if not already present in the URL
 if (!isset($_GET['trip_id'])) {
     $trip_id = random_int(100000, 999999);
-    header("Location: create_trip.php?trip_id=$trip_id");
+    header("Location:/travelplanner-master/create_trips/create_trip.php?trip_id=$trip_id");
     exit;
 } else {
     $trip_id = $_GET['trip_id'];
@@ -18,6 +18,7 @@ if (!isset($_GET['trip_id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id'];
+    // Get the hidden trip name which now reflects the selected destination's name
     $trip_name = $_POST['trip_name'];
     $destination = $_POST['destination'];
     $hotel = $_POST['hotel'];
@@ -25,6 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $childs_num = intval($_POST['childs_num']);
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
+
+    // Fallback: if the trip name is empty, retrieve the destination name from the database
+    if (empty($trip_name)) {
+        $stmt = $pdo->prepare("SELECT name FROM locations WHERE id = ?");
+        $stmt->execute([$destination]);
+        $trip_name = $stmt->fetchColumn();
+    }
+    // Set the trip name to "Trip to" plus the destination name
+    $trip_name = "Trip to " . trim($trip_name);
 
     // Calculate number of nights
     $start_date_obj = new DateTime($start_date);
@@ -44,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $pdo->prepare("INSERT INTO trips (trip_id, user_id, trip_name, destination, hotel, adults_num, childs_num, start_date, end_date, estimated_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$trip_id, $user_id, $trip_name, $destination, $hotel, $adults_num, $childs_num, $start_date, $end_date, $estimated_cost]);
 
-    header("Location: edit_trip.php?trip_id=$trip_id");
+    header("Location:/travelplanner-master/edit_trip.php?trip_id=$trip_id");
     exit;
 }
 
