@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
                 <label for="address" class="form-label">Address</label>
-                <input type="text" id="address" name="address" class="form-control" required>
+                <input type="text" id="address" name="address" class="form-control">
             </div>
             <div class="mb-3">
                 <label for="website" class="form-label">Website</label>

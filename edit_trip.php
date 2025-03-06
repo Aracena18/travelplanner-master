@@ -172,8 +172,8 @@ foreach ($sub_plan_types as $type) {
             <input type="hidden" id="estimated_cost" name="estimated_cost" value="0.00">
 
             <?php
-            include 'api/sub_plans_options.php';
-            include 'api/sub_plans.php';
+            include 'sub_plans_options.php';
+            include 'sub_plans.php';
             ?>
 
             <div class="d-flex justify-content-between">

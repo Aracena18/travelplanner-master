@@ -1,5 +1,5 @@
 <?php
-// filepath: /c:/xampp/htdocs/travelplanner-master/api/sub_plans.php
+// filepath: /c:/xampp/htdocs/travelplanner-master/sub_plans.php
 include 'db.php';
 
 if (session_status() == PHP_SESSION_NONE) {
@@ -7,16 +7,54 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../auth/login.php');
+    header('Location: auth/login.php');
     exit;
 }
 
 // Get the trip_id from the URL
 if (!isset($_GET['trip_id'])) {
-    header('Location: ../create_trip.php');
+    header('Location: create_trip.php');
     exit;
 } else {
     $trip_id = $_GET['trip_id'];
+}
+
+// Handle deletion of sub plans
+if (isset($_GET['delete']) && isset($_GET['type'])) {
+    $id = $_GET['delete'];
+    $type = $_GET['type'];
+
+    $table = '';
+    switch ($type) {
+        case 'activity':
+            $table = 'activity';
+            break;
+        case 'car_rental':
+            $table = 'car_rental';
+            break;
+        case 'concert':
+            $table = 'concert';
+            break;
+        case 'flight':
+            $table = 'flights';
+            break;
+        case 'meeting':
+            $table = 'meeting';
+            break;
+        case 'restaurant':
+            $table = 'restaurant';
+            break;
+        case 'transportation':
+            $table = 'transportation';
+            break;
+    }
+
+    if ($table) {
+        $stmt = $pdo->prepare("DELETE FROM $table WHERE id = ?");
+        $stmt->execute([$id]);
+        header("Location: edit_trip.php?trip_id=$trip_id");
+        exit;
+    }
 }
 
 // Initialize total cost
@@ -108,6 +146,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 <strong>Email:</strong> <?= htmlspecialchars($activity['email']) ?><br>
                                 <strong>Cost:</strong> $<?= htmlspecialchars($activity['cost']) ?>
                             </p>
+                            <a href="sub_plans.php?trip_id=<?= $trip_id ?>&delete=<?= $activity['id'] ?>&type=activity"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this activity?');">Delete</a>
                         </div>
                     </div>
                 </div>
@@ -133,6 +174,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 <strong>Phone:</strong> <?= htmlspecialchars($car_rental['phone']) ?><br>
                                 <strong>Cost:</strong> $<?= htmlspecialchars($car_rental['cost']) ?>
                             </p>
+                            <a href="sub_plans.php?trip_id=<?= $trip_id ?>&delete=<?= $car_rental['id'] ?>&type=car_rental"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this car rental?');">Delete</a>
                         </div>
                     </div>
                 </div>
@@ -159,6 +203,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 <strong>Website:</strong> <?= htmlspecialchars($concert['website']) ?><br>
                                 <strong>Email:</strong> <?= htmlspecialchars($concert['email']) ?>
                             </p>
+                            <a href="sub_plans.php?trip_id=<?= $trip_id ?>&delete=<?= $concert['id'] ?>&type=concert"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this concert?');">Delete</a>
                         </div>
                     </div>
                 </div>
@@ -187,6 +234,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 <strong>Arrival Date:</strong> <?= htmlspecialchars($flight['arrival_date']) ?><br>
                                 <strong>Arrival Time:</strong> <?= htmlspecialchars($flight['arrival_time']) ?>
                             </p>
+                            <a href="sub_plans.php?trip_id=<?= $trip_id ?>&delete=<?= $flight['id'] ?>&type=flight"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this flight?');">Delete</a>
                         </div>
                     </div>
                 </div>
@@ -213,6 +263,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 <strong>Website:</strong> <?= htmlspecialchars($meeting['website']) ?><br>
                                 <strong>Email:</strong> <?= htmlspecialchars($meeting['email']) ?>
                             </p>
+                            <a href="sub_plans.php?trip_id=<?= $trip_id ?>&delete=<?= $meeting['id'] ?>&type=meeting"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this meeting?');">Delete</a>
                         </div>
                     </div>
                 </div>
@@ -241,6 +294,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 <strong>Dress Code:</strong> <?= htmlspecialchars($restaurant['dress_code']) ?><br>
                                 <strong>Price:</strong> $<?= htmlspecialchars($restaurant['price']) ?>
                             </p>
+                            <a href="sub_plans.php?trip_id=<?= $trip_id ?>&delete=<?= $restaurant['id'] ?>&type=restaurant"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this restaurant?');">Delete</a>
                         </div>
                     </div>
                 </div>
@@ -273,6 +329,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                 <strong>Transportation Cost:</strong>
                                 $<?= htmlspecialchars($transportation['transportation_cost']) ?>
                             </p>
+                            <a href="sub_plans.php?trip_id=<?= $trip_id ?>&delete=<?= $transportation['id'] ?>&type=transportation"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this transportation?');">Delete</a>
                         </div>
                     </div>
                 </div>
