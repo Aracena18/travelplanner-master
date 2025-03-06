@@ -123,7 +123,7 @@ ob_end_flush();
         </h1>
 
         <div class="container mt-4 text-center">
-            <form id="create-trip-form" method="POST" action="create_trip.php">
+            <form id="create-trip-form" method="POST" action="/travelplanner-master/create_trips/create_trip.php">
                 <button type="submit" class="btn btn-success btn-lg">
                     <i class="fas fa-plus-circle me-2"></i>Add New Trip
                 </button>
