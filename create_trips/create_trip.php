@@ -119,30 +119,76 @@ include 'create_trip_template.php';
 ?>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const destinationElement = document.getElementById('destination');
+document.addEventListener('DOMContentLoaded', function() {
+    const tripId = new URLSearchParams(window.location.search).get('trip_id') || localStorage.getItem(
+        'trip_id');
+    localStorage.setItem('trip_id', tripId); // Store for later use
 
-        destinationElement.addEventListener('change', function() {
-            const destination = destinationElement.value;
+    const destinationElement = document.getElementById('destination');
+    const tripNameInput = document.getElementById('trip_name');
 
-            if (destination) {
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'create_trip_ajax.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            console.log("Trip created with ID:", response.trip_id);
-                            // Store the trip ID for further updates
-                            sessionStorage.setItem('trip_id', response.trip_id);
-                        } else {
-                            alert('Failed to create trip. Please try again.');
-                        }
-                    }
-                };
-                xhr.send('create_trip=1&destination=' + destination);
-            }
+    // Insert trip when destination is selected
+    destinationElement.addEventListener('change', function() {
+        const destinationId = this.value;
+        const destinationName = this.options[this.selectedIndex].text;
+
+        tripNameInput.value = destinationName; // Update hidden input
+
+        if (tripId) {
+            insertNewTrip(tripId, destinationId, destinationName);
+        }
+    });
+
+    function insertNewTrip(tripId, destinationId, destinationName) {
+        fetch('ajax/insert_trip.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `trip_id=${tripId}&destination_id=${destinationId}&trip_name=${encodeURIComponent(destinationName)}`
+            })
+            .then(response => response.json())
+            .then(data => console.log('Trip inserted:', data))
+            .catch(error => console.error('Error:', error));
+    }
+
+    document.querySelectorAll('.next-step').forEach(button => {
+        button.addEventListener('click', function() {
+            const currentStep = parseInt(document.querySelector('.form-step.active').dataset
+                .step);
+            updateTripData(currentStep);
         });
     });
+
+    function updateTripData(step) {
+        let data = `trip_id=${tripId}`;
+        switch (step) {
+            case 1:
+                data += `&destination_id=${destinationElement.value}`;
+                break;
+            case 2:
+                const hotelId = document.getElementById('hotel').value;
+                data += `&hotel_id=${hotelId}`;
+                break;
+            case 3:
+                const adults = document.getElementById('adults_num').value;
+                const children = document.getElementById('childs_num').value;
+                const startDate = document.getElementById('start_date').value;
+                const endDate = document.getElementById('end_date').value;
+                data += `&adults=${adults}&children=${children}&start_date=${startDate}&end_date=${endDate}`;
+                break;
+        }
+
+        fetch('ajax/update_trip.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: data
+            })
+            .then(response => response.json())
+            .then(data => console.log('Trip updated:', data))
+            .catch(error => console.error('Error:', error));
+    }
+});
 </script>
