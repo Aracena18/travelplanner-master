@@ -88,13 +88,6 @@ if (!isset($_SESSION)) {
             <!-- Brand Name -->
             <a class="navbar-brand" href="index.php">My Trips</a>
 
-            <!-- Search Bar (Optional) -->
-            <form class="d-flex ms-3" method="GET" action="index.php">
-                <input class="search-bar" type="search" name="query" placeholder="Search your trips..."
-                    aria-label="Search" value="<?= $_GET['query'] ?? '' ?>">
-            </form>
-
-
             <!-- Navbar Links -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

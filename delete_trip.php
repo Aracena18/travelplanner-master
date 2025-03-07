@@ -7,11 +7,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+if (!isset($_GET['trip_id']) || !is_numeric($_GET['trip_id'])) {
     die("Invalid trip ID");
 }
 
-$trip_id = $_GET['id'];
+$trip_id = $_GET['trip_id'];
 
 // Verify the trip exists before deleting
 $stmt = $pdo->prepare("SELECT * FROM trips WHERE trip_id = ? AND user_id = ?");
