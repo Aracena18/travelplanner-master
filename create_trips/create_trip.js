@@ -58,13 +58,13 @@ function updateSelectedHotel() {
 
 // Listen for changes on the destination select.
 // When using Choices.js the underlying select element still fires a native change event.
-destinationSelect.addEventListener('change', function (e) {
+destinationSelect.addEventListener('change', function(e) {
     updateTripName();
     loadHotelsForDestination(e.target.value);
 });
 
 // Pure JavaScript carousel controls
-document.querySelector('.carousel-control-next').addEventListener('click', function () {
+document.querySelector('.carousel-control-next').addEventListener('click', function() {
     const items = document.querySelectorAll('#hotel-cards .carousel-item');
     if (!items.length) return;
     let activeIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
@@ -75,7 +75,7 @@ document.querySelector('.carousel-control-next').addEventListener('click', funct
     centerCarousel();
 });
 
-document.querySelector('.carousel-control-prev').addEventListener('click', function () {
+document.querySelector('.carousel-control-prev').addEventListener('click', function() {
     const items = document.querySelectorAll('#hotel-cards .carousel-item');
     if (!items.length) return;
     let activeIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
@@ -146,7 +146,7 @@ function calculateEstimatedCost() {
     setTimeout(() => {
         costDisplay.style.transform = 'scale(1)';
     }, 200);
-
+    
     costDisplay.textContent = `Estimated Cost: $${estimatedCost.toFixed(2)}`;
 }
 
@@ -158,7 +158,7 @@ document.getElementById('hotel-carousel').addEventListener('click', calculateEst
 
 // Add form validation with visual feedback
 document.querySelectorAll('.form-control, .form-select').forEach(input => {
-    input.addEventListener('input', function () {
+    input.addEventListener('input', function() {
         if (this.value) {
             this.classList.add('is-valid');
             this.classList.remove('is-invalid');
@@ -178,37 +178,22 @@ function redirectTo(page) {
     window.location.href = `${page}?trip_id=${tripId}`;
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const destinationElement = document.getElementById("destination");
-    let tripId = new URLSearchParams(window.location.search).get("trip_id");
-
-    destinationElement.addEventListener("change", function () {
-        const destinationId = this.value;
-        if (!destinationId) return;
-
-        fetch("insert_trip.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `destination_id=${destinationId}`
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    tripId = data.trip_id;
-                    console.log("Trip created with trip_id:", tripId);
-                    updateURL(tripId);
-                } else {
-                    console.error("Error creating trip:", data.error);
-                }
-            })
-            .catch(error => console.error("AJAX Error:", error));
-    });
-
-    function updateURL(tripId) {
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.set("trip_id", tripId);
-        window.history.pushState({}, "", newUrl);
+// Update the Choices initialization in the event listener
+document.addEventListener('DOMContentLoaded', function () {
+  const choices = new Choices('#destination', {
+    searchEnabled: true,
+    itemSelectText: '',
+    shouldSort: false,
+    position: 'bottom',
+    searchPlaceholderValue: 'Search for a destination...',
+    classNames: {
+      containerOuter: 'choices destination-choices',
+    },
+    callbackOnInit: function() {
+      const choicesInput = document.querySelector('.choices__input');
+      if (choicesInput) {
+        choicesInput.setAttribute('aria-label', 'Search for a destination');
+      }
     }
+  });
 });
-
-
