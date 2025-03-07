@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <form method="POST" class="trip-form">
+      <form id="trip-form" method="POST" class="trip-form">
         <div class="form-step active" data-step="1">
           <!-- Hidden Trip Name field, auto-populated from the selected destination -->
           <input type="hidden" id="trip_name" name="trip_name">
@@ -59,7 +59,7 @@
                 <select id="destination" name="destination" class="form-select" required>
                   <option value="">Select a destination...</option>
                   <?php foreach ($destinations as $location_id => $location): ?>
-                    <option value="<?= $location_id ?>"> <?= htmlspecialchars($location['name']) ?>
+                    <option value="<?= $location_id ?>"><?= htmlspecialchars($location['name']) ?>
                     </option>
                   <?php endforeach; ?>
                 </select>
@@ -68,7 +68,7 @@
           </div>
           <div class="navigation-buttons">
             <button type="button" class="btn btn-secondary">Cancel</button>
-            <button type="button" class="btn btn-primary next-step">Continue</button>
+            <button type="button" class="btn btn-primary" id="step1-continue">Continue</button>
           </div>
         </div>
 
@@ -132,57 +132,7 @@
                   <label for="end_date">End Date</label>
                 </div>
               </div>
-
-              <!-- Reservations and Attachments -->
-              <div class="col-12 mt-4">
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <h5 class="card-title">Reservations and attachments</h5>
-                    <div class="d-flex flex-wrap gap-2">
-                      <button type="button" class="btn btn-light">
-                        <i class="fas fa-plane"></i> Flight
-                      </button>
-                      <button type="button" class="btn btn-light">
-                        <i class="fas fa-hotel"></i> Lodging
-                      </button>
-                      <button type="button" class="btn btn-light">
-                        <i class="fas fa-car"></i> Rental car
-                      </button>
-                      <button type="button" class="btn btn-light">
-                        <i class="fas fa-utensils"></i> Restaurant
-                      </button>
-                      <button type="button" class="btn btn-light">
-                        <i class="fas fa-paperclip"></i> Attachment
-                      </button>
-                      <button type="button" class="btn btn-light">
-                        <i class="fas fa-ellipsis-h"></i> Other
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Budgeting -->
-                <div class="card mb-3">
-                  <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                      <h5 class="card-title mb-0">Budgeting</h5>
-                    </div>
-                    <div>
-                      <span class="fs-5 fw-bold">$0.00</span>
-                      <a href="#" class="ms-3 text-decoration-none">View details</a>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Notes -->
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Notes</h5>
-                    <textarea class="form-control" rows="4" name="notes"
-                      placeholder="Write or paste anything here: how to get around, tips and tricks"></textarea>
-                  </div>
-                </div>
-              </div>
+              <input type="hidden" name="step3" value="1">
             </div>
           </div>
           <div class="navigation-buttons">
@@ -309,6 +259,30 @@
             showStep(currentStep);
           }
         });
+      });
+
+      // AJAX for step 1
+      document.getElementById('step1-continue').addEventListener('click', function() {
+        const destination = document.getElementById('destination').value;
+        if (destination) {
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', 'create_trip_ajax.php', true);
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              const response = JSON.parse(xhr.responseText);
+              if (response.success) {
+                currentStep++;
+                showStep(currentStep);
+              } else {
+                alert('Failed to create trip. Please try again.');
+              }
+            }
+          };
+          xhr.send('step1=1&destination=' + destination + '&trip_id=' + tripId);
+        } else {
+          alert('Please select a destination.');
+        }
       });
     });
   </script>

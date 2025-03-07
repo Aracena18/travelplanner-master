@@ -123,7 +123,7 @@ ob_end_flush();
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
 
         .card-img-top {
@@ -227,8 +227,15 @@ ob_end_flush();
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .animate-in {
@@ -243,11 +250,11 @@ ob_end_flush();
             <h1 class="text-center display-4 mb-4">
                 <?= !empty($searchQuery) ? "Search Results for: \"" . htmlspecialchars($searchQuery) . "\"" : "My Travel Adventures" ?>
             </h1>
-            
+
             <div class="search-container">
                 <form method="GET" action="" class="d-flex">
-                    <input type="text" name="query" class="form-control search-input" 
-                           placeholder="Search your trips..." value="<?= htmlspecialchars($searchQuery) ?>">
+                    <input type="text" name="query" class="form-control search-input" placeholder="Search your trips..."
+                        value="<?= htmlspecialchars($searchQuery) ?>">
                 </form>
             </div>
         </div>
@@ -271,7 +278,8 @@ ob_end_flush();
             <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
                 <?php foreach ($upcomingTrips as $trip): ?>
                     <div class="col animate-in">
-                        <div class="card h-100 shadow-sm" onclick="window.location.href='edit_trip.php?trip_id=<?= $trip['trip_id'] ?>'">
+                        <div class="card h-100 shadow-sm"
+                            onclick="window.location.href='edit_trip.php?trip_id=<?= $trip['trip_id'] ?>'">
                             <span class="destination-badge">
                                 <?= htmlspecialchars($trip['location_name']) ?>
                             </span>
@@ -279,17 +287,20 @@ ob_end_flush();
                                 <i class="fas fa-times"></i>
                             </button>
                             <img src="<?= htmlspecialchars(getHotelImage($trip['destination'], $trip['hotel'])) ?>"
-                                 alt="Hotel Image" class="card-img-top">
+                                alt="Hotel Image" class="card-img-top">
                             <div class="card-body">
                                 <h5 class="card-title"><?= htmlspecialchars($trip['trip_name']) ?></h5>
                                 <div class="trip-info">
                                     <i class="fas fa-hotel me-2"></i><?= htmlspecialchars($trip['hotel']) ?>
                                 </div>
                                 <div class="trip-info">
-                                    <i class="fas fa-users me-2"></i><?= htmlspecialchars($trip['adults_num'] + $trip['childs_num']) ?> Guests
+                                    <i
+                                        class="fas fa-users me-2"></i><?= htmlspecialchars($trip['adults_num'] + $trip['childs_num']) ?>
+                                    Guests
                                 </div>
                                 <div class="trip-info">
-                                    <i class="fas fa-calendar me-2"></i><?= date('M d', strtotime($trip['start_date'])) ?> - <?= date('M d, Y', strtotime($trip['end_date'])) ?>
+                                    <i class="fas fa-calendar me-2"></i><?= date('M d', strtotime($trip['start_date'])) ?> -
+                                    <?= date('M d, Y', strtotime($trip['end_date'])) ?>
                                 </div>
                             </div>
                         </div>
