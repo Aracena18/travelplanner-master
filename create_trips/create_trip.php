@@ -84,6 +84,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 // Include the HTML template (the view)
 include 'create_trip_template.php';
 <<<<<<< HEAD
+<<<<<<< HEAD
 ?>
 
 <script>
@@ -160,5 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+=======
+>>>>>>> parent of a7ff2b5 (it no longer redirects to edit_trip)
 =======
 >>>>>>> parent of a7ff2b5 (it no longer redirects to edit_trip)
