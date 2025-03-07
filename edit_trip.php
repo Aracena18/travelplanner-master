@@ -92,16 +92,16 @@ foreach ($sub_plan_types as $type) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        .carousel-item img {
-            max-height: 500px;
-            width: auto;
-            object-fit: cover;
-        }
+    .carousel-item img {
+        max-height: 500px;
+        width: auto;
+        object-fit: cover;
+    }
 
-        .plan-type-icon {
-            font-size: 24px;
-            margin-right: 8px;
-        }
+    .plan-type-icon {
+        font-size: 24px;
+        margin-right: 8px;
+    }
     </style>
 </head>
 
@@ -119,9 +119,9 @@ foreach ($sub_plan_types as $type) {
                     <label for="destination" class="form-label">Destination</label>
                     <select id="destination" name="destination" class="form-select form-select-sm" required>
                         <?php foreach ($destinations as $location_id => $location): ?>
-                            <option value="<?= $location_id ?>"
-                                <?= $location_id == $trip['destination'] ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($location['name']) ?> </option>
+                        <option value="<?= $location_id ?>"
+                            <?= $location_id == $trip['destination'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($location['name']) ?> </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -187,19 +187,19 @@ foreach ($sub_plan_types as $type) {
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
-        const destinationSelect = document.getElementById('destination');
-        const hotelCardsContainer = document.getElementById('hotel-cards');
-        const hotels = <?= json_encode($destinations); ?>;
-        const activities = <?= json_encode($activities); ?>;
-        const subPlans = <?= json_encode($sub_plans); ?>;
+    const destinationSelect = document.getElementById('destination');
+    const hotelCardsContainer = document.getElementById('hotel-cards');
+    const hotels = <?= json_encode($destinations); ?>;
+    const activities = <?= json_encode($activities); ?>;
+    const subPlans = <?= json_encode($sub_plans); ?>;
 
-        function loadHotelsForDestination(destination) {
-            hotelCardsContainer.innerHTML = '';
+    function loadHotelsForDestination(destination) {
+        hotelCardsContainer.innerHTML = '';
 
-            if (hotels[destination]) {
-                hotels[destination].hotels.forEach((hotel, index) => {
-                    const isActive = hotel.name === '<?= htmlspecialchars($trip['hotel']) ?>' ? 'active' : '';
-                    const card = `
+        if (hotels[destination]) {
+            hotels[destination].hotels.forEach((hotel, index) => {
+                const isActive = hotel.name === '<?= htmlspecialchars($trip['hotel']) ?>' ? 'active' : '';
+                const card = `
                         <div class="carousel-item ${isActive}" data-hotel="${hotel.name}" data-latitude="${hotel.latitude}" data-longitude="${hotel.longitude}" data-price="${hotel.price}">
                             <div class="card">
                                 <img src="assets/images/${hotel.image_name}" class="card-img-top" alt="${hotel.name}">
@@ -214,114 +214,114 @@ foreach ($sub_plan_types as $type) {
                                 </div>
                             </div>
                         </div>`;
-                    hotelCardsContainer.innerHTML += card;
-                });
-                updateSelectedHotel();
-            }
-        }
-
-        function updateSelectedHotel() {
-            const activeHotelItem = document.querySelector('#hotel-cards .carousel-item.active');
-            if (activeHotelItem) {
-                const selectedHotel = activeHotelItem.getAttribute('data-hotel');
-                const latitude = activeHotelItem.getAttribute('data-latitude');
-                const longitude = activeHotelItem.getAttribute('data-longitude');
-                document.getElementById('hotel').value = selectedHotel;
-                updateMapMarker(latitude, longitude);
-            }
-        }
-
-        destinationSelect.addEventListener('change', function() {
-            loadHotelsForDestination(this.value);
-        });
-
-        document.getElementById('hotel-carousel').addEventListener('slid.bs.carousel', updateSelectedHotel);
-
-        const map = L.map('map').setView([0, 0], 2);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        let currentMarker;
-
-        function updateMapMarker(lat, lng) {
-            if (currentMarker) {
-                map.removeLayer(currentMarker);
-            }
-            if (lat && lng) {
-                currentMarker = L.marker([lat, lng]).addTo(map)
-                    .bindPopup("Hotel Location").openPopup();
-                map.setView([lat, lng], 10);
-            }
-        }
-
-        function calculateEstimatedCost() {
-            const adultsNum = parseInt(document.getElementById('adults_num').value) || 0;
-            const childsNum = parseInt(document.getElementById('childs_num').value) || 0;
-            const startDate = new Date(document.getElementById('start_date').value);
-            const endDate = new Date(document.getElementById('end_date').value);
-
-            const activeHotelItem = document.querySelector('#hotel-cards .carousel-item.active');
-            const hotelCost = activeHotelItem ? parseFloat(activeHotelItem.getAttribute('data-price')) : 0;
-
-            const numberOfNights = Math.max((endDate - startDate) / (1000 * 60 * 60 * 24), 1);
-
-            // Calculate the number of rooms needed
-            const totalPeople = adultsNum + childsNum;
-            const roomsNeeded = Math.ceil(totalPeople / 2);
-
-            // Calculate the estimated cost
-            let estimatedCost = (hotelCost * roomsNeeded * numberOfNights);
-
-            // Add the cost of activities and other sub plans
-            subPlans.forEach(plan => {
-                estimatedCost += parseFloat(plan.cost || plan.price || plan.transportation_cost || 0);
+                hotelCardsContainer.innerHTML += card;
             });
-
-            document.getElementById('estimated-cost-display').textContent = `Estimated Cost: $${estimatedCost.toFixed(2)}`;
-            document.getElementById('estimated_cost').value = estimatedCost.toFixed(2);
+            updateSelectedHotel();
         }
+    }
 
-        // Attach event listeners to update the cost dynamically
-        ['adults_num', 'childs_num', 'start_date', 'end_date'].forEach(id => {
-            document.getElementById(id).addEventListener('input', calculateEstimatedCost);
+    function updateSelectedHotel() {
+        const activeHotelItem = document.querySelector('#hotel-cards .carousel-item.active');
+        if (activeHotelItem) {
+            const selectedHotel = activeHotelItem.getAttribute('data-hotel');
+            const latitude = activeHotelItem.getAttribute('data-latitude');
+            const longitude = activeHotelItem.getAttribute('data-longitude');
+            document.getElementById('hotel').value = selectedHotel;
+            updateMapMarker(latitude, longitude);
+        }
+    }
+
+    destinationSelect.addEventListener('change', function() {
+        loadHotelsForDestination(this.value);
+    });
+
+    document.getElementById('hotel-carousel').addEventListener('slid.bs.carousel', updateSelectedHotel);
+
+    const map = L.map('map').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    let currentMarker;
+
+    function updateMapMarker(lat, lng) {
+        if (currentMarker) {
+            map.removeLayer(currentMarker);
+        }
+        if (lat && lng) {
+            currentMarker = L.marker([lat, lng]).addTo(map)
+                .bindPopup("Hotel Location").openPopup();
+            map.setView([lat, lng], 10);
+        }
+    }
+
+    function calculateEstimatedCost() {
+        const adultsNum = parseInt(document.getElementById('adults_num').value) || 0;
+        const childsNum = parseInt(document.getElementById('childs_num').value) || 0;
+        const startDate = new Date(document.getElementById('start_date').value);
+        const endDate = new Date(document.getElementById('end_date').value);
+
+        const activeHotelItem = document.querySelector('#hotel-cards .carousel-item.active');
+        const hotelCost = activeHotelItem ? parseFloat(activeHotelItem.getAttribute('data-price')) : 0;
+
+        const numberOfNights = Math.max((endDate - startDate) / (1000 * 60 * 60 * 24), 1);
+
+        // Calculate the number of rooms needed
+        const totalPeople = adultsNum + childsNum;
+        const roomsNeeded = Math.ceil(totalPeople / 2);
+
+        // Calculate the estimated cost
+        let estimatedCost = (hotelCost * roomsNeeded * numberOfNights);
+
+        // Add the cost of activities and other sub plans
+        subPlans.forEach(plan => {
+            estimatedCost += parseFloat(plan.cost || plan.price || plan.transportation_cost || 0);
         });
 
-        document.getElementById('hotel-carousel').addEventListener('slid.bs.carousel', calculateEstimatedCost);
+        document.getElementById('estimated-cost-display').textContent = `Estimated Cost: $${estimatedCost.toFixed(2)}`;
+        document.getElementById('estimated_cost').value = estimatedCost.toFixed(2);
+    }
 
-        // Initial calculation on page load
-        loadHotelsForDestination(destinationSelect.value);
-        calculateEstimatedCost();
+    // Attach event listeners to update the cost dynamically
+    ['adults_num', 'childs_num', 'start_date', 'end_date'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateEstimatedCost);
+    });
 
-        function redirectTo(page) {
-            const tripId = <?= json_encode($trip_id); ?>;
-            window.location.href = `${page}?trip_id=${tripId}`;
-        }
+    document.getElementById('hotel-carousel').addEventListener('slid.bs.carousel', calculateEstimatedCost);
 
-        // Handle form submission with AJAX
-        document.getElementById('edit-trip-form').addEventListener('submit', function(event) {
-            event.preventDefault();
+    // Initial calculation on page load
+    loadHotelsForDestination(destinationSelect.value);
+    calculateEstimatedCost();
 
-            const formData = new FormData(this);
-            formData.append('trip_id', <?= json_encode($trip_id); ?>);
+    function redirectTo(page) {
+        const tripId = <?= json_encode($trip_id); ?>;
+        window.location.href = `${page}?trip_id=${tripId}`;
+    }
 
-            fetch('edit_trip.php?trip_id=<?= $trip_id ?>', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Trip updated successfully!');
-                    } else {
-                        alert('Failed to update the trip: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while updating the trip.');
-                });
-        });
+    // Handle form submission with AJAX
+    document.getElementById('edit-trip-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        formData.append('trip_id', <?= json_encode($trip_id); ?>);
+
+        fetch('edit_trip.php?trip_id=<?= $trip_id ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Trip updated successfully!');
+                } else {
+                    alert('Failed to update the trip: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the trip.');
+            });
+    });
     </script>
 </body>
 
