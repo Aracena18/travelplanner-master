@@ -95,7 +95,7 @@
           </div>
           <div class="navigation-buttons">
             <button type="button" class="btn btn-secondary prev-step">Back</button>
-            <button type="button" class="btn btn-primary next-step">Continue</button>
+            <button type="button" class="btn btn-primary" id="step2-continue">Continue</button>
           </div>
         </div>
 
@@ -130,6 +130,41 @@
                 <div class="form-floating">
                   <input type="date" id="end_date" name="end_date" class="form-control" required>
                   <label for="end_date">End Date</label>
+                </div>
+              </div>
+              <!-- Reservations and Attachments -->
+              <div class="col-12 mt-4">
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <h5 class="card-title">Reservations and attachments</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                      <?php
+                      include 'sub_plans_options.php';
+                      ?>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Budgeting -->
+                <div class="card mb-3">
+                  <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                      <h5 class="card-title mb-0">Budgeting</h5>
+                    </div>
+                    <div>
+                      <span class="fs-5 fw-bold">$0.00</span>
+                      <a href="#" class="ms-3 text-decoration-none">View details</a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Notes</h5>
+                    <textarea class="form-control" rows="4" name="notes"
+                      placeholder="Write or paste anything here: how to get around, tips and tricks"></textarea>
+                  </div>
                 </div>
               </div>
               <input type="hidden" name="step3" value="1">
@@ -178,6 +213,7 @@
     const hotels = <?php echo json_encode($destinations); ?>;
     const activities = <?php echo json_encode($activities); ?>;
     const tripId = <?php echo json_encode($trip_id); ?>;
+    const currentStep = <?php echo json_encode(isset($_GET['step']) ? $_GET['step'] : 1); ?>;
   </script>
 
   <!-- Initialize Choices.js on the destination dropdown and update the hidden trip name -->
@@ -219,7 +255,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       const steps = document.querySelectorAll('.form-step');
       const indicators = document.querySelectorAll('.step-indicator');
-      let currentStep = 1;
+      let currentStep = parseInt(new URLSearchParams(window.location.search).get('step')) || 1;
 
       function showStep(stepNumber) {
         steps.forEach(step => step.classList.remove('active'));
@@ -240,7 +276,15 @@
             indicator.classList.remove('step-completed');
           }
         });
+
+        // Update URL
+        const url = new URL(window.location);
+        url.searchParams.set('step', stepNumber);
+        window.history.pushState({}, '', url);
       }
+
+      // Show the current step on page load
+      showStep(currentStep);
 
       // Navigation button handlers
       document.querySelectorAll('.next-step').forEach(button => {
@@ -258,6 +302,15 @@
             currentStep--;
             showStep(currentStep);
           }
+        });
+      });
+
+      // Make step numbers clickable
+      indicators.forEach(indicator => {
+        indicator.addEventListener('click', () => {
+          const step = parseInt(indicator.dataset.step);
+          currentStep = step;
+          showStep(currentStep);
         });
       });
 
@@ -283,6 +336,63 @@
         } else {
           alert('Please select a destination.');
         }
+      });
+
+      // AJAX for step 2
+      document.getElementById('step2-continue').addEventListener('click', function() {
+        const activeHotelItem = document.querySelector('#hotel-cards .carousel-item.active');
+        if (activeHotelItem) {
+          const hotelName = activeHotelItem.getAttribute('data-hotel');
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', 'update_hotel_ajax.php', true);
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              const response = JSON.parse(xhr.responseText);
+              if (response.success) {
+                currentStep++;
+                showStep(currentStep);
+              } else {
+                alert('Failed to update hotel. Please try again.');
+              }
+            }
+          };
+          xhr.send('step2=1&hotel=' + encodeURIComponent(hotelName) + '&trip_id=' + tripId);
+        } else {
+          alert('Please select a hotel.');
+        }
+      });
+
+      // AJAX for step 3
+      function updateTravelDetails(field, value) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'update_travel_details_ajax.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (!response.success) {
+              alert('Failed to update travel details. Please try again.');
+            }
+          }
+        };
+        xhr.send('step3=1&field=' + field + '&value=' + value + '&trip_id=' + tripId);
+      }
+
+      document.getElementById('adults_num').addEventListener('change', function() {
+        updateTravelDetails('adults_num', this.value);
+      });
+
+      document.getElementById('childs_num').addEventListener('change', function() {
+        updateTravelDetails('childs_num', this.value);
+      });
+
+      document.getElementById('start_date').addEventListener('change', function() {
+        updateTravelDetails('start_date', this.value);
+      });
+
+      document.getElementById('end_date').addEventListener('change', function() {
+        updateTravelDetails('end_date', this.value);
       });
     });
   </script>

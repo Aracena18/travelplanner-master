@@ -1,5 +1,4 @@
 <?php
-// filepath: /c:/xampp/htdocs/travelplanner-master/plans/restaurant.php
 include '../db.php';
 session_start();
 
@@ -25,12 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $party_size = $_POST['party_size'];
     $dress_code = $_POST['dress_code'] ?? null;
     $price = $_POST['price'];
+    $start_date = $_POST['start_date'];
+    $end_date = $_POST['end_date'];
     $start_time = $_POST['start_time'];
     $end_time = $_POST['end_time'];
 
     // Insert restaurant details into the database
-    $stmt = $pdo->prepare("INSERT INTO restaurant (trip_id, address, phone, website, email, cuisine, party_size, dress_code, price, start_time, end_time, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->execute([$trip_id, $address, $phone, $website, $email, $cuisine, $party_size, $dress_code, $price, $start_time, $end_time]);
+    $stmt = $pdo->prepare("INSERT INTO restaurant (trip_id, address, phone, website, email, cuisine, party_size, dress_code, price, start_date, end_date, start_time, end_time, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->execute([$trip_id, $address, $phone, $website, $email, $cuisine, $party_size, $dress_code, $price, $start_date, $end_date, $start_time, $end_time]);
 
     header('Location: ../edit_trip.php?trip_id=' . $trip_id);
     exit;
@@ -80,8 +81,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" id="dress_code" name="dress_code" class="form-control">
             </div>
             <div class="mb-3">
-                <label for="price" class="form-label">Price</label>
+                <label for="price" class="form-label">Total Price</label>
                 <input type="number" step="0.01" id="price" name="price" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" id="start_date" name="start_date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" id="end_date" name="end_date" class="form-control" required>
             </div>
             <div class="mb-3">
                 <label for="start_time" class="form-label">Start Time</label>
