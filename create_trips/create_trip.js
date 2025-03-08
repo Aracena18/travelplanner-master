@@ -175,7 +175,7 @@ calculateEstimatedCost();
 loadHotelsForDestination(destinationSelect.value);
 
 function redirectTo(page) {
-    window.location.href = `${page}?trip_id=${tripId}`;
+    window.location.href = `${page}?trip_id=${window.tripId}`;
 }
 
 // Update the Choices initialization in the event listener

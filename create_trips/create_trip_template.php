@@ -11,151 +11,23 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <!-- Choices.js CSS for searchable dropdown -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-  <style>
-    .destination-select-container {
-      margin-bottom: 1.5rem;
-    }
-    
-    .choices {
-      margin-bottom: 0;
-    }
-    
-    .choices__inner {
-      background-color: #fff;
-      border: 1px solid #ced4da;
-      border-radius: 0.375rem;
-      min-height: 44px;
-      padding: 0.375rem 0.75rem;
-    }
-    
-    .choices__list--dropdown {
-      border-radius: 0.375rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .choices__list--dropdown .choices__item {
-      padding: 0.75rem 1rem;
-    }
-    
-    .choices__list--dropdown .choices__item--selectable {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .choices__list--dropdown .choices__item--selectable::before {
-      content: '\f3c5';
-      font-family: 'Font Awesome 5 Free';
-      font-weight: 900;
-      color: #0d6efd;
-    }
-    
-    .choices.is-focused .choices__inner {
-      border-color: #86b7fe;
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    .header-banner {
-      background: linear-gradient(135deg, #1a4f7a, #2980b9);
-      padding: 2rem;
-      color: white;
-      margin-bottom: 2rem;
-      border-radius: 0 0 20px 20px;
-    }
-    
-    .form-section {
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      padding: 2rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .section-icon {
-      font-size: 1.5rem;
-      color: #3498db;
-      margin-right: 1rem;
-    }
-
-    .progress-bar-container {
-      position: sticky;
-      top: 0;
-      background: white;
-      padding: 1rem 0;
-      z-index: 1000;
-      border-bottom: 1px solid rgba(0,0,0,0.1);
-    }
-
-    .progress-steps {
-      display: flex;
-      justify-content: space-between;
-      max-width: 800px;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    .step-indicator {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 1;
-    }
-
-    .step-number {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      background: #e9ecef;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 0.5rem;
-      transition: all 0.3s ease;
-    }
-
-    .step-active .step-number {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    .step-completed .step-number {
-      background: var(--accent-color);
-      color: white;
-    }
-
-    .form-step {
-      display: none;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .form-step.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .navigation-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 2rem;
-    }
-  </style>
 </head>
 <body>
   <div class="layout-container">
     <div class="planning-section">
       <div class="header-banner">
-        <h1 class="display-4">
+        <h1 class="display-4 fw-bold">
           <i class="fas fa-globe-americas me-3"></i>
-          Plan Your Dream Journey
+          Create Your Journey
         </h1>
-        <p class="lead mb-0">Create unforgettable memories with our travel planner</p>
+        <p class="lead">Transform your travel dreams into unforgettable experiences</p>
+        <div class="banner-shapes">
+          <div class="shape-1"></div>
+          <div class="shape-2"></div>
+        </div>
       </div>
 
-      <div class="progress-bar-container">
+      <div class="progress-bar-container sticky-top">
         <div class="progress-steps">
           <div class="step-indicator step-active" data-step="1">
             <div class="step-number">1</div>
@@ -342,6 +214,11 @@
     </div>
     <div class="map-section">
       <div id="map"></div>
+      <div class="map-overlay">
+        <div class="selected-destination-info">
+          <!-- Will be populated via JavaScript -->
+        </div>
+      </div>
     </div>
   </div>
   
@@ -357,6 +234,7 @@
     const hotels = <?php echo json_encode($destinations); ?>;
     const activities = <?php echo json_encode($activities); ?>;
     const tripId = <?php echo json_encode($trip_id); ?>;
+    window.currentTripId = tripId; // Set the global trip ID variable for AJAX calls
   </script>
   
   <!-- Initialize Choices.js on the destination dropdown and update the hidden trip name -->
